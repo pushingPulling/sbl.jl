@@ -1,5 +1,5 @@
 module sbl
 
-# Write your package code here.
+include("fileformats/pubchem_json.jl")
 
 end
