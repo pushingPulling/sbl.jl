@@ -1,0 +1,337 @@
+// -*- Mode: C++; tab-width: 2; -*-
+// vi: set ts=2:
+//
+
+#constructor
+BALL_INLINE
+Composite& Composite::operator = (const Composite& composite)
+{
+  set(composite);
+  return *this;
+}
+
+#get
+BALL_INLINE
+void Composite::get(Composite& composite, bool deep) const
+{
+  composite.set(*this, deep);
+}
+#degree
+BALL_INLINE
+Size Composite::getDegree() const
+{
+  return number_of_children_;
+}
+
+#count(go up)
+BALL_INLINE
+Size Composite::countDescendants() const
+{
+  return (countDescendants_() - 1);
+}
+
+#get root(go down)
+BALL_INLINE
+const Composite& Composite::getRoot() const
+{
+  return (const_cast<Composite*>(this)->getRoot());
+}
+
+#go down + algo
+BALL_INLINE
+const Composite* Composite::getLowestCommonAncestor(const Composite &composite) const
+{
+  return ((Composite *)this)->getLowestCommonAncestor((Composite &)composite);
+}
+
+#go up (once)
+BALL_INLINE
+Composite* Composite::getParent()
+{
+  return parent_;
+}
+
+#get kid
+BALL_INLINE
+const Composite* Composite::getChild(Index index) const
+{
+  return ((Composite *)this)->getChild(index);
+}
+
+#get kidS
+BALL_INLINE
+const Composite* Composite::getSibling(Index index) const
+{
+  return ((Composite *)this)->getSibling(index);
+}
+
+#get first kid
+BALL_INLINE
+Composite* Composite::getFirstChild()
+{
+  return first_child_;
+}
+
+#get last kid
+BALL_INLINE
+Composite* Composite::getLastChild()
+{
+  return last_child_;
+}
+
+#get internal value
+BALL_INLINE
+const PreciseTime& Composite::getModificationTime() const
+{
+  return modification_stamp_.getTime();
+}
+
+#get internal value
+BALL_INLINE
+const PreciseTime& Composite::getSelectionTime() const
+{
+  return selection_stamp_.getTime();
+}
+
+#get internal value
+BALL_INLINE
+bool Composite::isEmpty() const
+{
+  return (number_of_children_ == 0);
+}
+
+#get internal value
+BALL_INLINE
+bool Composite::isRoot() const
+{
+  return (parent_ == 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isAncestorOf(const Composite& composite) const
+{
+	return composite.isDescendantOf(*this);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isRootOf(const Composite& composite) const
+{
+  return (((parent_ == 0) && (isAncestorOf(composite) == true)) || (&composite == this));
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isInterior() const
+{
+  return (parent_ != 0 && first_child_ != 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::hasChild() const
+{
+  return (first_child_ != 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isChildOf(const Composite &composite) const
+{
+  return (parent_ == &composite);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isFirstChild() const
+{
+  return (parent_ != 0 && parent_->first_child_ == this);
+}
+
+
+#compare nodes
+BALL_INLINE
+bool Composite::isLastChild() const
+{
+  return (parent_ != 0 && parent_->last_child_ == this);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isLastChildOf(const Composite &composite) const
+{
+  return (composite.last_child_ == this);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::hasParent() const
+{
+  return (parent_ != 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isParentOf(const Composite &composite) const
+{
+  return (composite.parent_ == this);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::hasSibling() const
+{
+  return (parent_ != 0 && parent_->number_of_children_ > 1);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isSiblingOf(const Composite &composite) const
+{
+  return ((composite.parent_ == parent_) && (parent_ != 0) && (&composite != this));
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::hasPreviousSibling() const
+{
+  return (previous_ != 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isPreviousSiblingOf(const Composite &composite) const
+{
+  return (next_ == &composite);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::hasNextSibling() const
+{
+  return (next_ != 0);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isNextSiblingOf(const Composite &composite) const
+{
+  return (previous_ == &composite);
+}
+
+#compare nodes
+BALL_INLINE
+bool Composite::isRelatedWith(const Composite &composite) const
+{
+  return ((&composite == this)
+					|| composite.isAncestorOf(*this)
+					|| this->isAncestorOf(composite));
+}
+
+#get internal value
+BALL_INLINE
+bool Composite::containsSelection() const
+{
+	return (contains_selection_);
+}
+
+  452     void prependChild(Composite& composite) ;
+  453
+  461     void appendChild(Composite& composite) ;
+  462
+  482     static bool insertParent(Composite& parent, Composite& first,
+  483                              Composite& last, bool destroy_parent = true)
+  484       ;
+  485
+  495     void insertBefore(Composite& composite) ;
+  496
+  506     void insertAfter(Composite& composite) ;
+  507
+  516     void spliceBefore(Composite& composite) ;
+  517
+  526     void spliceAfter(Composite& composite) ;
+  527
+  537     void splice(Composite& composite) ;
+  538
+  547     bool removeChild(Composite& child) ;
+  swap
+   bool isEmpty() const ;
+  640
+  644     bool isRoot() const ;
+  645
+  648     bool isRootOf(const Composite& composite) const ;
+  649
+  652     bool isInterior() const ;
+  653
+  656     bool hasChild() const ;
+  657
+  660     bool isChildOf(const Composite& composite) const ;
+  661
+  664     bool isFirstChild() const ;
+  665
+  668     bool isFirstChildOf(const Composite& composite) const ;
+  669
+  672     bool isLastChild() const ;
+  673
+  676     bool isLastChildOf(const Composite& composite) const ;
+  677
+  680     bool hasParent() const ;
+  681
+  684     bool isParentOf(const Composite& composite) const ;
+  685
+  689     bool hasSibling() const ;
+  690
+  693     bool isSiblingOf(const Composite& composite) const ;
+  694
+  698     bool hasPreviousSibling() const ;
+  699
+  702     bool isPreviousSiblingOf(const Composite& composite) const ;
+  703
+  707     bool hasNextSibling() const ;
+  708
+  711     bool isNextSiblingOf(const Composite& composite) const ;
+  712
+  715     bool isDescendantOf(const Composite& composite) const ;
+  716
+  719     template <typename T>
+  720     bool hasAncestor(const T& dummy) const  ;
+  721
+  724     bool isAncestorOf(const Composite& composite) const ;
+  725
+  729     bool isRelatedWith(const Composite& composite) const ;
+  730
+  734     bool isHomomorph(const Composite& composite) const ;
+  735
+   virtual bool isAtom() const { return false; }
+  758
+  762     virtual bool isMolecule() const { return false; }
+  763
+  767     virtual bool isProtein() const { return false; }
+  768
+  772     virtual bool isFragment() const { return false; }
+  773
+  777     virtual bool isResidue() const { return false; }
+  778
+  782     virtual bool isChain() const { return false; }
+  784
+  790     virtual bool isValid() const ;
+  1362 Composite* findPreviousPosition(Composite* p) const
+
+ 1413       Composite* findNextPosition(Composite* p) const
+ 1467     typedef BidirectionalIterator<Composite, Composite, Composite*, CompositeIteratorTraits>
+ 1468       CompositeIterator;
+ 1469
+ 1470     CompositeIterator beginComposite()  { return CompositeIterator::begin(*this); }
+ 1471
+ 1472     CompositeIterator endComposite()  { return CompositeIterator::end(*this); }
+
+l2100 in composite.h has ancestir and next iteration
+#traverse?
+####------------------------------------------------------
+BALL_INLINE
+void Composite::host(Visitor<Composite>& visitor)
+{
+  visitor.visit(*this);
+}
+####------------------------------------------------------

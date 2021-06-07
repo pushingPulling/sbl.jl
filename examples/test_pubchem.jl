@@ -1,4 +1,5 @@
-using sbl
+include("../src/sbl.jl")
+using PCResult
 
 using HTTP
 using JSON3
@@ -19,8 +20,8 @@ function read_json(filename)
 
     pb_json_txt
 end
-
-pb_json_txt = read_json("sbl/test/data/aspirin_pug.json");
+pb_json_txt = read_json(abspath("test/data/aspirin_pug.json"));
+pb_json_txt = read_json("sbl.jl/test/data/aspirin_pug.json");
 
 r = JSON3.read(pb_json_txt, PCResult)
 
