@@ -37,7 +37,13 @@ const Index = BALL_INDEX_TYPE
 	end
 		ASCII__RETURN           = ASCII__NEWLINE
 		ASCII__TAB              = ASCII__HORIZONTAL_TAB
-		Base.convert(::Type{Any}, x::ASCII) = convert(Char, x)	#whenever one tries to convert this it will be converted into a char automatically
+		#whenever one tries to convert an ascii to any type, it will actually convert to a character
+		Base.convert(::Type{Any}, x::ASCII) = convert(Char, x)
+
+@enum FileFormats begin
+	PDB
+end
+
 
 const INVALID_Distance = typemax(Distance)
 const Distance_MIN = typemin(Distance) + 1
@@ -58,3 +64,4 @@ const Position_MAX = typemax(BALL_INDEX_TYPE) - 1
 const INVALID_Size = typemax(Size)
 const Size_MIN = 0;
 const Size_MAX = typemax(Size) - 1;
+

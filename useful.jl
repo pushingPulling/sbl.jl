@@ -451,3 +451,18 @@ end
 a = MyNumber(2)
 b = MyNumber(3)
 println("$(a+b), $(a/b), $(sin(a))")
+
+julia> @btime first(Iterators.reverse($itr))
+  6.600 ns (0 allocations: 0 bytes)
+(3000, 3000)
+
+Base.@kwdef struct P{T,X<:Union{T,Nothing},Y<:Union{T,Nothing}}
+    x::X = nothing
+    y::Y = nothing
+end
+
+function Base.getproperty(int::Interval, s::Symbol)
+    s == :left && return left_end(int)
+    s == :right && return right_end(int)
+    return getfield(int, s)
+end

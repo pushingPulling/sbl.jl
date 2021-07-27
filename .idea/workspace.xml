@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:compathelper" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:compathelper" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:new_version" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3502fbe0-0800-453e-844c-b157d2f3acdc" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/KERNEL/atomBijection.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/benchmarks/composite_benchmarks.jl" beforeDir="false" afterPath="$PROJECT_DIR$/benchmarks/composite_benchmarks.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/COMMON/common.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/COMMON/common.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/COMMON/global.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/COMMON/global.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CONCEPT/composite.jl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/CONCEPT/timeStamp.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/CONCEPT/timeStamp.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/PTE.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/PTE.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/atom.jl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/atomContainer.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/atomContainer.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/bond.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/bond.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/chain.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/chain.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/fragment.jl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/molecule.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/molecule.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/secondaryStructure.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/secondaryStructure.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/KERNEL/system.jl" beforeDir="false" afterPath="$PROJECT_DIR$/src/KERNEL/system.jl" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testfile.jl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/useful.jl" beforeDir="false" afterPath="$PROJECT_DIR$/useful.jl" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Julia File" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="kernel_prototype" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1tLVwkRqeW8aUZz32gvX7Gy9bDs" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="restartRequiresConfirmation" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.keymap" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="G:\Python Programme\sbl.jl" />
+      <recent name="G:\Python Programme\sbl.jl\src\CONCEPT" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Julia.testfile">
+    <configuration name="atom" type="JULIA_RUN_CONFIG_ID" factoryName="Julia" temporary="true">
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="targetFile" value="$PROJECT_DIR$/src/KERNEL/atom.jl" />
+      <setting name="additionalOptions" value="" />
+      <setting name="programArgs" value="" />
+      <setting name="juliaExecutive" value="C:\Users\Dan\AppData\Local\Programs\Julia-1.6.1\bin\julia.exe" />
+      <setting name="jitCompiler" value="yes" />
+      <setting name="deprecationWarning" value="yes" />
+      <setting name="codeCoverage" value="none" />
+      <setting name="trackAllocation" value="none" />
+      <setting name="systemImage" value="" />
+      <setting name="systemImageOption" value="false" />
+      <setting name="inlineOption" value="false" />
+      <setting name="checkBoundsOption" value="false" />
+      <setting name="colorOption" value="true" />
+      <setting name="mathModeOption" value="false" />
+      <setting name="handleSignalOption" value="false" />
+      <setting name="startupFileOption" value="true" />
+      <setting name="historyOption" value="false" />
+      <setting name="launchReplOption" value="false" />
+      <setting name="optimizationLevel" value="3" />
+      <method v="2" />
+    </configuration>
+    <configuration name="bond" type="JULIA_RUN_CONFIG_ID" factoryName="Julia" temporary="true">
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="targetFile" value="$PROJECT_DIR$/src/KERNEL/bond.jl" />
+      <setting name="additionalOptions" value="" />
+      <setting name="programArgs" value="" />
+      <setting name="juliaExecutive" value="C:\Users\Dan\AppData\Local\Programs\Julia-1.6.1\bin\julia.exe" />
+      <setting name="jitCompiler" value="yes" />
+      <setting name="deprecationWarning" value="yes" />
+      <setting name="codeCoverage" value="none" />
+      <setting name="trackAllocation" value="none" />
+      <setting name="systemImage" value="" />
+      <setting name="systemImageOption" value="false" />
+      <setting name="inlineOption" value="false" />
+      <setting name="checkBoundsOption" value="false" />
+      <setting name="colorOption" value="true" />
+      <setting name="mathModeOption" value="false" />
+      <setting name="handleSignalOption" value="false" />
+      <setting name="startupFileOption" value="true" />
+      <setting name="historyOption" value="false" />
+      <setting name="launchReplOption" value="false" />
+      <setting name="optimizationLevel" value="3" />
+      <method v="2" />
+    </configuration>
+    <configuration name="composite_iterator" type="JULIA_RUN_CONFIG_ID" factoryName="Julia" temporary="true">
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="targetFile" value="$PROJECT_DIR$/src/CONCEPT/composite_iterator.jl" />
+      <setting name="additionalOptions" value="" />
+      <setting name="programArgs" value="" />
+      <setting name="juliaExecutive" value="C:\Users\Dan\AppData\Local\Programs\Julia-1.6.1\bin\julia.exe" />
+      <setting name="jitCompiler" value="yes" />
+      <setting name="deprecationWarning" value="yes" />
+      <setting name="codeCoverage" value="none" />
+      <setting name="trackAllocation" value="none" />
+      <setting name="systemImage" value="" />
+      <setting name="systemImageOption" value="false" />
+      <setting name="inlineOption" value="false" />
+      <setting name="checkBoundsOption" value="false" />
+      <setting name="colorOption" value="true" />
+      <setting name="mathModeOption" value="false" />
+      <setting name="handleSignalOption" value="false" />
+      <setting name="startupFileOption" value="true" />
+      <setting name="historyOption" value="false" />
+      <setting name="launchReplOption" value="false" />
+      <setting name="optimizationLevel" value="3" />
+      <method v="2" />
+    </configuration>
+    <configuration name="global" type="JULIA_RUN_CONFIG_ID" factoryName="Julia" temporary="true">
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="targetFile" value="$PROJECT_DIR$/src/COMMON/global.jl" />
+      <setting name="additionalOptions" value="" />
+      <setting name="programArgs" value="" />
+      <setting name="juliaExecutive" value="C:\Users\Dan\AppData\Local\Programs\Julia-1.6.1\bin\julia.exe" />
+      <setting name="jitCompiler" value="yes" />
+      <setting name="deprecationWarning" value="yes" />
+      <setting name="codeCoverage" value="none" />
+      <setting name="trackAllocation" value="none" />
+      <setting name="systemImage" value="" />
+      <setting name="systemImageOption" value="false" />
+      <setting name="inlineOption" value="false" />
+      <setting name="checkBoundsOption" value="false" />
+      <setting name="colorOption" value="true" />
+      <setting name="mathModeOption" value="false" />
+      <setting name="handleSignalOption" value="false" />
+      <setting name="startupFileOption" value="true" />
+      <setting name="historyOption" value="false" />
+      <setting name="launchReplOption" value="false" />
+      <setting name="optimizationLevel" value="3" />
+      <method v="2" />
+    </configuration>
+    <configuration name="testfile" type="JULIA_RUN_CONFIG_ID" factoryName="Julia" temporary="true">
+      <setting name="workingDir" value="$PROJECT_DIR$" />
+      <setting name="targetFile" value="$PROJECT_DIR$/testfile.jl" />
+      <setting name="additionalOptions" value="" />
+      <setting name="programArgs" value="" />
+      <setting name="juliaExecutive" value="C:\Users\Dan\AppData\Local\Programs\Julia-1.6.1\bin\julia.exe" />
+      <setting name="jitCompiler" value="yes" />
+      <setting name="deprecationWarning" value="yes" />
+      <setting name="codeCoverage" value="none" />
+      <setting name="trackAllocation" value="none" />
+      <setting name="systemImage" value="" />
+      <setting name="systemImageOption" value="false" />
+      <setting name="inlineOption" value="false" />
+      <setting name="checkBoundsOption" value="false" />
+      <setting name="colorOption" value="true" />
+      <setting name="mathModeOption" value="false" />
+      <setting name="handleSignalOption" value="false" />
+      <setting name="startupFileOption" value="true" />
+      <setting name="historyOption" value="false" />
+      <setting name="launchReplOption" value="false" />
+      <setting name="optimizationLevel" value="3" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Julia.testfile" />
+        <item itemvalue="Julia.atom" />
+        <item itemvalue="Julia.bond" />
+        <item itemvalue="Julia.global" />
+        <item itemvalue="Julia.composite_iterator" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3502fbe0-0800-453e-844c-b157d2f3acdc" name="Default Changelist" comment="" />
+      <created>1622548596901</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1622548596901</updated>
+    </task>
+    <task id="LOCAL-00001" summary="First incomplete version of core structures in Kernel&#10;This version has Composite as its own type. It is implemented as a tree&#10;&#10;Future versions will decide whether to use interfaces or Unions of types in function definitions">
+      <created>1623057475472</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1623057475472</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="First incomplete version of core structures in Kernel&#10;This version has Composite as its own type. It is implemented as a tree&#10;&#10;Future versions will decide whether to use interfaces or Unions of types in function definitions" />
+    <option name="LAST_COMMIT_MESSAGE" value="First incomplete version of core structures in Kernel&#10;This version has Composite as its own type. It is implemented as a tree&#10;&#10;Future versions will decide whether to use interfaces or Unions of types in function definitions" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="2650" y="321" key="#com.intellij.fileTypes.FileTypeChooser" timestamp="1622632011658">
+      <screen x="1920" y="0" width="1920" height="1040" />
+    </state>
+    <state x="2650" y="321" key="#com.intellij.fileTypes.FileTypeChooser/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1622632011658" />
+    <state width="1876" height="285" key="GridCell.Tab.0.bottom" timestamp="1627416160531">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="285" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627416160531" />
+    <state width="1876" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1627059717933" />
+    <state width="1876" height="285" key="GridCell.Tab.0.center" timestamp="1627416160530">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="285" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627416160530" />
+    <state width="1876" height="282" key="GridCell.Tab.0.center/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1627059717933" />
+    <state width="1876" height="285" key="GridCell.Tab.0.left" timestamp="1627416160530">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="285" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627416160530" />
+    <state width="1876" height="282" key="GridCell.Tab.0.left/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1627059717933" />
+    <state width="1876" height="285" key="GridCell.Tab.0.right" timestamp="1627416160530">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="285" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1627416160530" />
+    <state width="1876" height="282" key="GridCell.Tab.0.right/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1627059717933" />
+    <state width="1876" height="348" key="GridCell.Tab.1.bottom" timestamp="1624021866036">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1624021866036" />
+    <state width="1876" height="348" key="GridCell.Tab.1.bottom/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1623937811003" />
+    <state width="1876" height="348" key="GridCell.Tab.1.center" timestamp="1624021866036">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="348" key="GridCell.Tab.1.center/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1624021866036" />
+    <state width="1876" height="348" key="GridCell.Tab.1.center/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1623937811003" />
+    <state width="1876" height="348" key="GridCell.Tab.1.left" timestamp="1624021866035">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="348" key="GridCell.Tab.1.left/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1624021866035" />
+    <state width="1876" height="348" key="GridCell.Tab.1.left/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1623937811003" />
+    <state width="1876" height="348" key="GridCell.Tab.1.right" timestamp="1624021866036">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state width="1876" height="348" key="GridCell.Tab.1.right/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1624021866036" />
+    <state width="1876" height="348" key="GridCell.Tab.1.right/0.0.1920.1040/1920.0.1920.1040@1920.0.1920.1040" timestamp="1623937811003" />
+    <state x="461" y="164" key="SettingsEditor" timestamp="1623260759171">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="461" y="164" key="SettingsEditor/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1623260759171" />
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2" timestamp="1623057484993">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="552" y="252" key="Vcs.Push.Dialog.v2/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1623057484993" />
+    <state x="666" y="255" width="587" height="530" key="find.popup" timestamp="1625501624515">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="666" y="255" width="587" height="530" key="find.popup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1625501624515" />
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup" timestamp="1623340464136">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="623" y="225" width="672" height="678" key="search.everywhere.popup/0.0.1920.1040/1920.0.1920.1040@0.0.1920.1040" timestamp="1623340464136" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="julia-line">
+          <url>file://$PROJECT_DIR$/src/KERNEL/system.jl</url>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="julia-line">
+          <url>file://$PROJECT_DIR$/testfile3.jl</url>
+          <line>115</line>
+          <option name="timeStamp" value="2" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
