@@ -9,10 +9,11 @@ include("../COMMON/common.jl")
 include("selectable.jl")
 include("timeStamp.jl")
 
-import Base.convert
+import Base.convert, Base.getindex
 
 abstract type CompositeInterface <: Selectable end
 
+Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
 
 #=  Preorder, Neutral-Left-Right iterator
     (first current object, then DFS-like left subtree,
@@ -66,14 +67,6 @@ isDescendantOf(this::T, other::S) where {T,S <: CompositeInterface} = begin
     return false
 end
 
-getAtom(root::T, name::AbstractString) where T<:CompositeInterface = begin
-    for atom in AtomIterator(root)
-        if atom.name_ == name
-            return atom
-        end
-    end
-    return nothing
-end
 
 remove_child(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
     # avoid self-removal and removal of ancestors
@@ -134,8 +127,11 @@ remove_child(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
 
 end
 
+getParent(node::CompositeInterface) = begin
+    return node.parent_
+end
 
-get_children(node::T) where T <: CompositeInterface = begin
+getChildren(node::T) where T <: CompositeInterface = begin
 
     if node.first_child_ !== nothing
         cur = node.first_child_
@@ -248,23 +244,24 @@ end
 #order: NLR
 recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
     #performs a collect on current node and all its ancestors
-    vec = Vector{CompositeInterface}()
+    vec = Vector{collectType}()
 
-    recursive_collect(node::Type1,vec::Vector{CompositeInterface}, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
+    recursive_collect(node::Type1,vec::Vector{Type2}, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
         if collectType == CompositeInterface
             push!(vec,node)
         end
-        (typeof(vec) == collectType) && push!(vec,node)
-
+        (typeof(node) == collectType) && push!(vec,node)
         if !isnothing(node.first_child_)
             cur = node.first_child_
             recursive_collect(cur,vec,collectType)
             while !isnothing(cur.next_)
-               recursive_collect(cur.next_,vec,collectType)
+                recursive_collect(cur.next_,vec,collectType)
                 cur = cur.next_
             end
         end
+        return vec
     end
+
     recursive_collect(node,vec,collectType)
     return vec
 end
@@ -283,6 +280,14 @@ end
 
 collectChains(node::CompositeInterface) = begin
     recursive_collect(node,Chain)
+end
+
+collectBonds(node::CompositeInterface) = begin
+    bonds = Set{Bond}()
+    for at in collectAtoms(internal_representation)
+        length(values(getBonds(at))) > 0 && push!(bonds, values(getBonds(at))...)
+    end
+    return collect(bonds)
 end
 
 function clearSelectionTree(x::CompositeInterface)
@@ -304,13 +309,44 @@ countChildren(comp::CompositeInterface) = begin
     return count
 end
 
-getName(comp::CompositeInterface) = begin
-    if typeof(comp) != Chain
-        return comp.name_
+getProperties(comp::CompositeInterface) = begin
+    return comp.properties_
+end
+
+hasProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
+    if any([property[1] == x[1] for x in getProperties(comp) ])
+       return true
+    end
+    return false
+end
+hasProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = hasProperty(comp,(property[1],UInt8(property[2])))
+
+getProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
+    if hasProperty(comp,property)
+        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        return getProperties(comp)[index][2]
+    end
+    return nothing
+end
+
+setProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
+    if hasProperty(comp,property)
+        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        getProperties(comp)[index][2] = property[2]
     else
-        return comp.id_
+        push!(comp.properties_, property)
     end
 end
+setProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
+
+getName(comp::CompositeInterface) = begin
+#chain and residue override this function in their respective julia file
+    if typeof(comp) == Chain
+        return comp.name_
+    end
+end
+
+
 
 Base.show(io::IO, comp::CompositeInterface) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
 countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms.")

@@ -15,7 +15,7 @@ mutable struct System <: CompositeInterface
     next_                                       ::Union{CompositeInterface, Nothing}
     first_child_                                ::Union{CompositeInterface, Nothing}
     last_child_                                 ::Union{CompositeInterface, Nothing}
-    properties_                                 ::Union{UInt64,Nothing}
+    properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Size,Nothing}
     number_of_children_containing_selection_    ::Union{Size,Nothing}
@@ -33,7 +33,7 @@ mutable struct System <: CompositeInterface
             next_                                       ::Union{CompositeInterface, Nothing},
             first_child_                                ::Union{CompositeInterface, Nothing},
             last_child_                                 ::Union{CompositeInterface, Nothing},
-            properties_                                 ::Union{UInt64,Nothing},
+            properties_                                 ::Vector{Tuple{String,UInt8}},
             contains_selection_                         ::Union{Bool,Nothing},
             number_of_selected_children_                ::Union{Size,Nothing},
             number_of_children_containing_selection_    ::Union{Size,Nothing},
@@ -61,7 +61,7 @@ mutable struct System <: CompositeInterface
 end
 
 System(mod::BioStructures.Model) = System("", countchains(mod),
-    nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing,false)
+    nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),false,0,0,nothing,nothing,nothing,false)
 
-System() = System("",0,nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing,false)
+System() = System("",0,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),false,0,0,nothing,nothing,nothing,false)
 

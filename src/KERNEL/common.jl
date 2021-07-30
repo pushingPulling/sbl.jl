@@ -1,5 +1,3 @@
-#to import a KERNEL module in any file, you may invoke following code in the file
-# "include(joinpath(pwd(),"src","KERNEL","common.jl")); using .KERNEL.MyMod"
 
 #module KERNEL
     include("atom.jl")

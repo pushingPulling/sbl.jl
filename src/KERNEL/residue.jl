@@ -16,7 +16,7 @@ mutable struct Residue <: CompositeInterface
     next_                                       ::Union{Nothing,CompositeInterface}
     first_child_                                ::Union{Nothing,CompositeInterface}
     last_child_                                 ::Union{Nothing,CompositeInterface}
-    properties_                                 ::Union{UInt64,Nothing}
+    properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
     number_of_selected_children_                ::Union{Size,Nothing}
     number_of_children_containing_selection_    ::Union{Size,Nothing}
@@ -29,8 +29,8 @@ mutable struct Residue <: CompositeInterface
     is_hetero_                                  ::Union{Bool,Nothing}
     selected_                                   ::Bool
 
-    Residue() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,
-    nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,false)
+    Residue() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),nothing,nothing,nothing,nothing,nothing,nothing,
+    nothing,nothing,nothing,nothing,false)
 
     Residue(res_name_                                   ::Union{String,Nothing},
             number_of_children_                         ::Union{Size,Nothing},
@@ -39,7 +39,7 @@ mutable struct Residue <: CompositeInterface
             next_                                       ::Union{Nothing,CompositeInterface},
             first_child_                                ::Union{Nothing,CompositeInterface},
             last_child_                                 ::Union{Nothing,CompositeInterface},
-            properties_                                 ::Union{UInt64,Nothing},
+            properties_                                 ::Vector{Tuple{String,UInt8}},
             contains_selection_                         ::Union{Bool,Nothing},
             number_of_selected_children_                ::Union{Size,Nothing},
             number_of_children_containing_selection_    ::Union{Size,Nothing},
@@ -76,12 +76,31 @@ mutable struct Residue <: CompositeInterface
 end
 Residue(res_name::String,num_of_children::Int64, ins_code::Char, res_number::Int64,hetero::Bool) =
     Residue(res_name,num_of_children,nothing,nothing,nothing,nothing,nothing,
-            nothing,nothing,nothing,nothing,nothing,nothing,nothing,ins_code, false,res_number,hetero,false)
+            Vector{Tuple{String,UInt8}}(),nothing,nothing,nothing,nothing,nothing,nothing,
+            ins_code, false,res_number,hetero,false)
 
 
-Residue(res::BioStructures.Residue) = Residue(res.name,countatoms(res,expand_disordered = false), res.ins_code,res.number,res.het_res)
+Residue(res::BioStructures.Residue, res_counter::Int64) = Residue(res.name,countatoms(res,expand_disordered = false), res.ins_code,res_counter,res.het_res)
 Residue(res::BioStructures.DisorderedResidue) = nothing #change this if we need disorderedRes
 
+getName(res::Residue) = return res.res_name_
+
+
+isAminoAcid(res::Residue) = return hasProperty(res, ("amino_acid",true) )
+isNTerminal(res::Residue) = begin
+    !isAminoAcid(res) && return false
+    chain = res.parent_
+    typeof(chain) == Residue && return false
+    residues = collectResidues(chain)
+    current_res = residues[1]
+    for x in residues
+        if (x == res) || (!isAminoAcid(x))
+            current_res = x
+            break
+        end
+    end
+    return (current_res == res)
+end
 
 Base.show(io::IO, res::Residue) = print(io,
     "Residue ($(res.is_hetero_ ? "hetero" : "non-hetero")) with ",

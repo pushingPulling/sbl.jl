@@ -1,363 +1,322 @@
-include("src/KERNEL/atom.jl")
-include("src/KERNEL/atomContainer.jl")
-include("src/KERNEL/bond.jl")
-include("src/COMMON/common.jl")
-include("src/CONCEPT/timeStamp.jl")
-const CompositeType = Union{Atom,AtomContainer,Bond} #,nothing}?
+#=
+using DataFrames
+include("src/CONCEPT/composite.jl")
+include("src/KERNEL/dataformats.jl")
 
 
-mutable struct Composite
-    number_of_children_::Size
-    parent_::Composite
-    previous_::Composite
-    next_::Composite
-    first_child_::Union{Composite,Missing}
-    last_child_::Composite
-    properties_::UInt8
-    contains_selection_::Bool
-    number_of_selected_children_::Size
-    number_of_children_containing_selection_::Size
-    selection_stamp_::TimeStamp
-    modification_stamp_::TimeStamp
-    trait_::CompositeType
 
-    #default constructor
-    Composite() = new()
+import Base.convert
+using BioStructures
 
-    #full constructor
-    Composite(
-        number_of_children::Size,
-        parent::Composite,
-        previous::Composite,
-        next::Composite,
-        first_child::Composite,
-        last_child::Composite,
-        properties::UInt8,
-        contains_selection::Bool,
-        number_of_selected_children::Size,
-        number_of_children_containing_selection::Size,
-        selection_stamp::TimeStamp,
-        modification_stamp::TimeStamp,
-        trait::CompositeType,
-    ) = begin
-
-        new(
-            number_of_children,
-            parent,
-            previous,
-            next,
-            first_child,
-            last_child,
-            properties,
-            contains_selection,
-            number_of_selected_children,
-            number_of_children_containing_selection,
-            selection_stamp,
-            modification_stamp,
-            trait,
-        )
-    end
-
-end
-#partial constructor: Refs to other Composites and the obj itself
-Composite(
-    number_of_children::Size,
-    parent::Composite,
-    prev::Composite,
-    next::Composite,
-    first_child::Composite,
-    last_child::Composite,
-    trait,
-) = begin
-
-    Composite(
-        number_of_children,
-        parent,
-        prev,
-        next,
-        first_child,
-        last_child,
-        0,
-        false,
-        false,
-        0,
-        0,
-        nothing,
-        nothing,
-        trait,
-    )
-end
+struc = read("1EN2.pdb", PDB)
 
 
-#=  Preorder, Neutral-Left-Right iterator
-    (first current object, then DFS-like left subtree,
-    then DFS-like right subtree)
+myatom = struc.models[1].chains["A"].residues["32"].atoms[" CA "]
+
+root = Composite()
+root2 = System()
+a = System()
+b  = System()
+c = Chain()
+d = Chain()
+x = Chain()
+e = Atom()
+f = Atom()
+g = Atom()
+h = Atom()
+
+root2.parent_ = nothing
+root2.last_child_ = nothing
+root2.next_ = nothing
+root2.name_ = "r"
+
+root.parent_ = nothing
+root.last_child_ = nothing
+root.next_ = nothing
+root.properties_ = UInt64(122)
+
+a.parent_ = nothing
+a.last_child_ = nothing
+a.next_ = nothing
+a.name_ = "a"
+
+b.parent_ = nothing
+b.last_child_ = nothing
+b.next_ = nothing
+b.name_ = "b"
+
+c.parent_ = nothing
+c.last_child_ = nothing
+c.next_ = nothing
+c.id = "c"
+
+x.parent_ = nothing
+x.first_child_ = nothing
+x.last_child_ = nothing
+x.next_ = nothing
+x.id = "x"
+
+
+d.parent_ = nothing
+d.last_child_ = nothing
+d.next_ = nothing
+d.id = "d"
+
+e.parent_ = nothing
+e.first_child_ = nothing
+e.last_child_ = nothing
+e.next_ = nothing
+e.temp_factor_ = 1.0
+
+f.parent_ = nothing
+f.first_child_ = nothing
+f.last_child_ = nothing
+f.next_ = nothing
+f.temp_factor_ = 2.0
+
+g.parent_ = nothing
+g.first_child_ = nothing
+g.last_child_ = nothing
+g.next_ = nothing
+g.temp_factor_ = 3.0
+
+h.parent_ = nothing
+h.first_child_ = nothing
+h.last_child_ = nothing
+h.next_ = nothing
+h.temp_factor_ = 4.0
+
+appendchild(root,a)
+appendchild(root,b)
+appendchild(b,c)
+appendchild(a,d)
+appendchild(c,e)
+appendchild(c,f)
+appendchild(d,h)
+appendchild(d,g)
+
+appendchild(b,x)
+
+
+mycomp = convert(Composite, struc)
+
+
+
+
+
+struc2 = BioStructures.ProteinStructure(mycomp)
+println(struc2)
+
+writepdb("testthingy2", struc2)
 =#
-Base.iterate(C::Composite, state = ([], 1)) = begin
-    stack::Vector{Ref{Composite}} = state[1]
-    count::Int64 = state[2]
-    #subtree_root::Composite
-    #cur::Composite
 
-    if !isempty(stack)
-        subtree_root = stack[1][]
-        popfirst!(stack)
-    else
-        subtree_root = C
-        (count != 1) && return nothing
-    end
+#ToDo : countx methods
 
-    if !ismissing(subtree_root.first_child_)
-        cur = subtree_root.first_child_
-        while cur != subtree_root.last_child_
-            push!(stack, Ref(cur))
-            cur = cur.next_
-        end
-        push!(stack, Ref(cur))
-    end
+#=
+import Base.push!
+using StaticArrays
 
-    count += 1
-    return (subtree_root, (stack, count))
+abstract type Ato end
+struct Bond
+    first::Ato
+    second::Ato
 end
 
-a_element = Atom()
-a_element.name_ = "a"
-b_element = Atom()
-b_element.name_ = "b"
-c_element = Atom()
-c_element.name_ = "c"
-d_element = Atom()
-d_element.name_ = "d"
-e_element = Atom()
-e_element.name_ = "e"
-x_element = Atom()
-x_element.name_ = "x"
-
-a = Composite()
-b = Composite()
-c = Composite()
-d = Composite()
-e = Composite()
-x = Composite()
-
-a.trait_ = a_element
-b.trait_ = b_element
-c.trait_ = c_element
-d.trait_ = d_element
-e.trait_ = e_element
-x.trait_ = x_element
-
-a.first_child_ = x
-a.last_child_ = b
-
-x.first_child_ = missing
-x.next_ = b
-
-b.first_child_ = c
-b.last_child_ = d
+const bondVec = SVector{12,Union{Bond,Nothing}}
+const bondDic = Dict{Ato,Bond}
 
 
-c.first_child_ = e
-c.last_child_ = e
-c.next_ = d
-
-e.first_child_ = missing
-d.first_child_ = missing
-
-for item in a
-    println(item.trait_.name_)
+mutable struct aVec<:Ato
+    name::String
+    bonds::bondVec
+    last_index::Int8
 end
 
-using Random
-seed = 42
-rng = MersenneTwister(seed)
-NUM_ELEMS = convert(Int64,1e3)
-println("Num elems: $NUM_ELEMS \n")
+mutable struct aDic<:Ato
+    name::String
+    bonds::bondDic
+end
 
-function initializeDict()
-    result_dict = Dict{Symbol,Int64}()
-    for item in instances(Symbol)
-        result_dict[item] = 0
+push!(cont::aVec, bond::Bond) = begin
+    (cont.last_index == 12) && return
+    cont.bonds = bondVec(cont.bonds[1:cont.last_index]..., bond, repeat([nothing],11-cont.last_index)...)
+    cont.last_index += 1
+end
+
+atomVec = aVec[]
+atomDic = aDic[]
+for i in 1:Int(1e6)
+    push!(atomVec, aVec(string(1), bondVec(repeat([nothing],12)...), 0))
+    push!(atomDic, aDic(string(1), bondDic()))
+
+    #connect to those who came before
+    lower = max(1,i-12)
+    for j in lower:(i-1)
+        temp = Bond(atomVec[i],atomVec[j])
+        push!(atomVec[i], temp)
+        push!(atomVec[j], temp)
+
+        atomDic[i].bonds[atomDic[j]] = temp
+        atomDic[j].bonds[atomDic[i]] = temp
     end
-    return result_dict
-end
-num_symbols = length(instances(Symbol))
-Elements = Vector{Element}(undef, NUM_ELEMS)
-Atoms = Vector{Atom}(undef, NUM_ELEMS)
-Composites = Vector{Composite}(undef, NUM_ELEMS)
-
-for i = 1:NUM_ELEMS
-    elem = Element()
-    elem.symbol_ = Symbol(rand(rng, (0:num_symbols-1)))
-    Elements[i] = elem
-
-    atom = Atom()
-    atom.element_ = elem
-    atom.name_ = string(i)
-    Atoms[i] = atom
-end
-
-#build tree
-#have up to y children per Node. each child is insterted into a stack
-#and awaits getting children
-test  =0
-function populateTree(Atoms::Vector{Atom}, Elements::Vector{Element})
-    root = Composite()
-    stack = Vector{Composite}()
-    NUM_CHILDREN = 10
-    node_counter = 0
-
-    push!(stack, root)
-    root.trait_ = Atoms[node_counter+1]
-    node_counter += 1
-    #debug_i = 0
-    while node_counter < NUM_ELEMS
-        #println("iter $debug_i: $(length(stack))")
-        if isempty(stack)
-            println("STACK: $stack")
-            throw(DomainError(stack, "too many childless nodes"))
-        end
-        cur = stack[1]
-
-
-        num_children = rand(rng, 0:NUM_CHILDREN)
-        (num_children + node_counter) > NUM_ELEMS ?
-        (num_children = NUM_ELEMS - node_counter) : nothing
-        tempArr = Composite[]
-        if num_children != 0
-            popfirst!(stack)
-            for i = 1:num_children
-                temp = Composite()
-                temp.trait_ = Atoms[node_counter+i]
-                temp.first_child_ = missing
-                if node_counter > 980
-                    global test = temp
-                end
-                push!(tempArr, temp)
-            end
-
-            if num_children > 1
-                for i = 1:length(tempArr)-1
-                    tempArr[i].next_ = tempArr[i+1]
-                end
-                node_counter += num_children
-
-
-                cur.first_child_ = tempArr[1]
-                cur.last_child_ = tempArr[end]
-
-                for item in tempArr
-                    push!(stack, item)
-                end
-            end
-        end
-        #debug_i += 1
-    end
-    return root
-end
-root = populateTree(Atoms, Elements)
-
-function iterateOverTree(root::Composite, hist::Dict{Symbol,Int64})
-    for item in root
-        hist[item.trait_.element_.symbol_] += 1
-    end
-    return hist
-end
-
-function iterateOverVector(arr::Vector{Composite},hist::Dict{Symbol,Int64})
-    for item in arr
-        hist[item.trait_.element_.symbol_] += 1
-    end
-    return hist
 end
 
 using BenchmarkTools
-using Statistics
-using Continuables
 
-corange(n::Integer) = @cont begin
-  for i in 1:n
-    cont(i)
-  end
-end
-
-
-
-simple1(n::Integer) = begin
-    stack = []
-    for i in 1:n
-        push!(stack,i)
+function benchmarkBondsVector(x::aVec, lis::Vector{aVec})
+    counter = 0
+    for item in lis
+        bond = Bond(x,item)
+        if bond in item.bonds
+            counter += 1
+        end
     end
-    return stack
+    return counter
+
 end
 
-simple2(n::Integer) = begin
-    stack = Array{Int64}(undef,n)
-    for i in 1:n
-        stack[i] = i
+function benchmarkBondsVector2(x::aVec, lis::Vector{aVec})
+    counter = 0
+    for item in lis
+        if any([(x == xs.first || x== xs.second) for xs in item.bonds])
+            counter += 1
+        end
+
     end
-    return stack
+    return counter
 end
 
+function benchmarkBondsVector3(x::aVec, lis::Vector{aVec})
+    counter = 0
+    for item in lis
+        for bond in item.bonds
+            if bond.first == x || bond.second == x
+                counter +=1
+                break
+            end
+        end
+    end
+    return counter
+end
 
+function benchmarkBondsDict(x::aDic, lis::Vector{aDic})
+    counter = 0
+    for item in lis
+        if haskey(item.bonds, x)
+            counter += 1
+        end
+    end
+    return counter
+end
 
-num = convert(Int64,1e7)
-#=
-t = @benchmark collect(corange(num))
-print("corange ")
+xVec = atomVec[99]
+xDic = atomDic[99]
+
+println( benchmarkBondsVector(xVec,atomVec))
+println( benchmarkBondsVector2(xVec,atomVec))
+println( benchmarkBondsVector3(xVec,atomVec))
+println( benchmarkBondsDict(xDic,atomDic))
+
+BenchmarkTools.DEFAULT_PARAMETERS.samples = 10000
+t = @benchmark benchmarkBondsVector(xVec,atomVec)
+print("v1 ")
 t2 = mean(t.times)/1e6
 println(t," ", t2,"ms")
 
-t = @benchmark simple1(num)
-print("simple ")
+BenchmarkTools.DEFAULT_PARAMETERS.samples = 10000
+t = @benchmark benchmarkBondsVector2(xVec,atomVec)
+print("v2 ")
 t2 = mean(t.times)/1e6
 println(t," ", t2,"ms")
 
-t = @benchmark simple2(num)
-print("simple ")
+BenchmarkTools.DEFAULT_PARAMETERS.samples = 10000
+t = @benchmark benchmarkBondsVector3(xVec,atomVec)
+print("v3 ")
+t2 = mean(t.times)/1e6
+println(t," ", t2,"ms")
+
+BenchmarkTools.DEFAULT_PARAMETERS.samples = 10000
+t = @benchmark benchmarkBondsDict(xDic,atomDic)
+print("v1 ")
 t2 = mean(t.times)/1e6
 println(t," ", t2,"ms")
 =#
 
-#trash
-count = 0
-iterateMy(::Nothing) = nothing
-iterateMy(x::Composite) = @cont begin
-    global count += 1
-    println(count)
-    cont(x.trait_.name_)
-    if !ismissing(x.first_child_)
-        cur = x.first_child_
-        println("here")
-        iterateMy(cur)
+#using DataFrames
+#include("src/CONCEPT/composite.jl")
+#include("src/KERNEL/dataformats.jl")
 
-        fun()
-        while cur != x.last_child_
-            println("here2")
-            cont(iterateMy(cur.next_))
-            iterateMy(cur.next_)
-            fun()
-            cur = cur.next_
-        end
-    end
-end
+import Base.convert
+using BioStructures
+
+#struc = read("2lzx.pdb", PDB)
+
+#println(struc)
+#println(fieldnames(typeof(struc.models[1].chains["A"].residues.vals[1])))
+#println(struc.models[1].chains["A"])
+#biojl = [x.name for x in values(struc.models[1].chains["A"].residues) if typeof(x) != BioStructures.DisorderedResidue]
+#pdbfile = "PCA ARG CYS GLY SER GLN GLY GLY GLY SER THR CYS PRO GLY LEU ARG CYS CYS SER ILE TRP GLY TRP CYS GLY ASP SER GLU PRO TYR CYS GLY ARG THR CYS GLU ASN LYS CYS TRP SER GLY GLU ARG SER ASP HIS ARG CYS GLY ALA ALA VAL GLY ASN PRO PRO CYS GLY GLN ASP ARG CYS CYS SER VAL HIS GLY TRP CYS GLY GLY GLY ASN ASP TYR CYS SER GLY GLY ASN CYS GLN TYR ARG CYS SER SER SER"
+#biojl_dict = Dict{String, Int64}()
+#println(biojl)
+
+#for x in biojl
+#    if !haskey(biojl_dict,x)
+#        biojl_dict[x] = 1
+#    else
+#        biojl_dict[x] += 1
+#    end
+#end
+
+#for y in sort(collect(biojl_dict), by = tuple -> last(tuple), rev=true)
+#    println(y)
+#end
+#
+#
+#pdbsplit = split(pdbfile, " ")
+#
+#pdbdict = Dict()
+#for x in pdbsplit
+#    if !haskey(pdbdict,x)
+#        pdbdict[x] = 1
+#    else
+#        pdbdict[x] += 1
+#    end
+#end
+#println("--------------------------------")
+#for y in sort(collect(pdbdict), by = tuple -> last(tuple), rev=true)
+#    println(y)
+#end
+#
+#gluc = convert(System, struc)
+#println(gluc)
+
+#check how the atoms are connected, to see if a "CONNECT x a b" line in PDB creates bond(x,a) and bond(x,b)
+#result: it does
+
+#struc = read("glucose.pdb", BioStructures.PDB)
+#internal = convert(System, struc)
+#internal = System("glucose.pdb", PDB)
+#
+#for atom in AtomIterator(internal)
+#    println(atom.serial_)
+#end
+
+##--readpdb--##
+include("src/CONCEPT/composite.jl")
+include("src/KERNEL/dataformats.jl")
 
 
+#println(fieldnames(typeof(struc.models[1].chains["A"].residues.vals[1])))
+#println(struc.models[1].chains["A"])
+internal_representation = System("1EN2.pdb", PDB)
 
-Base.iterate(x::Composite,state) = @cont begin
-    if ismissing(x.first_child_)
-        return x.trait_.name_
-    end
+struc = read("1EN2.pdb",BioStructures.PDB)
+#println([(getName(x),x.insertion_code_) for x in collectResidues(internal_representation)] )
+println( [getName(x) for x in collectResidues(internal_representation) if isAminoAcid(x)] )
+println( length([getName(x) for x in collectResidues(internal_representation) if isAminoAcid(x)]) )
+println( length(collectResidues(internal_representation)))
+println(length(collectAtoms(internal_representation)))
+#do collectBonds
+#integrate into findfirst
+#make findall -> many already defined functions applicable
 
-    cur = x.first_child_
-    myRecursiveIterate(cur)
-    while !ismissing(cur.next_)
-        myRecursiveIterate(cur.next_)
-        cur = cur.next_
-    end
-    return x.trait_.name_
-end
-
-for i in a
-println(i)
-end

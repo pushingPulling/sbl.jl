@@ -65,3 +65,7 @@ const INVALID_Size = typemax(Size)
 const Size_MIN = 0;
 const Size_MAX = typemax(Size) - 1;
 
+const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE", "LYS", "LEU",
+ 							"MET", "ASN", "PRO", "GLN", "ARG", "SER", "THR", "VAL", "TRP", "TYR"]
+
+BALL_Properties = String["amino_acid"]

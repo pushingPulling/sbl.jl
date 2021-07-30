@@ -16,7 +16,9 @@ macro inherit(name, base, fields)
     return res
 end
 
-
+capitalize(str::String) = begin
+    return string(uppercase(str[1]), lowercase(str[2:end]))
+end
 
 
 

@@ -36,6 +36,8 @@ mutable struct Bond
         name_                        ::String
         bond_order_                  ::Order
         bond_type_                   ::BondType
+        propertyies_                 ::Vector{Tuple{String,Int8}}
+
 
         Bond(x::CompositeInterface, y::CompositeInterface, name::String, bond_order::Order, bond_type::BondType) = begin
             throw(ErrorException("Bonds are only allowed between Atoms. Input: $x , $y."))
@@ -50,7 +52,7 @@ mutable struct Bond
                 x = y
                 y = temp
             end
-            new(x,y,name,bond_order,bond_type)
+            new(x,y,name,bond_order,bond_type,Vector{Tuple{String,Int8}}())
         end
 end
 
@@ -58,17 +60,31 @@ Bond(at1::AtomInterface, at2::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) =
     Bond(at1,at2,name,order,type)
 
+
+#creates a Bond if none already exists between two atoms
 createBond(at_owner::AtomInterface, at_guest::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) = begin
+    bondExists(at_owner,at_guest) && return nothing
     temp = Bond(at_owner, at_guest, name = name, order = order, type = type)
     at_owner.bonds_[at_guest] = temp
     at_guest.bonds_[at_owner] = temp
     return temp
 end
 
+bondExists(at1::AtomInterface, at2::AtomInterface) = begin
+    return haskey(at1.bonds_,at2)
+end
+
+#deletes a bond. has no effect if a bond between the atoms was not present
+deleteBond(at1::AtomInterface, at2::AtomInterface) = begin
+    delete!(at1.bonds_, at2)
+    delete!(at2.bonds_, at1)
+    return nothing
+end
+
 printBonds(at::AtomInterface, io::IO = Base.stdout) = begin
-    print(io,"$at has bonds to ",
-     join(keys(at.bonds_),", "),".")
+    println(io,"$at has bonds to ",
+     join(keys(at.bonds_),", "),". ")
 end
 
 
@@ -76,27 +92,27 @@ end
 Base.show(io::IO, bond::Bond) = begin
     bond_order= "Unknown-order"
     bond_type = "unknown-type"
-    if bond.bond_order_ == 1
+    if bond.bond_order_ == Order(1)
         bond_order= "Single"
-    elseif bond.bond_order_ == 2
+    elseif bond.bond_order_ == Order(2)
         bond_order= "Double"
-    elseif bond.bond_order_ == 3
+    elseif bond.bond_order_ == Order(3)
         bond_order= "Triple"
-    elseif bond.bond_order_ == 4
+    elseif bond.bond_order_ == Order(4)
         bond_order= "Quadruple"
-    elseif bond.bond_order_ == 5
+    elseif bond.bond_order_ == Order(5)
         bond_order= "Aromatic"
     end
 
-    if bond.bond_type_ == 1
+    if bond.bond_type_ == BondType(1)
         bond_type= "covalent"
-    elseif bond.bond_type_ == 2
+    elseif bond.bond_type_ == BondType(2)
         bond_type= "hydrogen"
-    elseif bond.bond_type_ == 3
+    elseif bond.bond_type_ == BondType(3)
         bond_type= "disulphite-bridge"
-    elseif bond.bond_type_ == 4
+    elseif bond.bond_type_ == BondType(4)
         bond_type= "salt-bridge"
-    elseif bond.bond_type_ == 5
+    elseif bond.bond_type_ == BondType(5)
         bond_type= "peptide"
     end
 
