@@ -68,4 +68,5 @@ const Size_MAX = typemax(Size) - 1;
 const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE", "LYS", "LEU",
  							"MET", "ASN", "PRO", "GLN", "ARG", "SER", "THR", "VAL", "TRP", "TYR"]
 
+BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS = 50000
 BALL_Properties = String["amino_acid"]

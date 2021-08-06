@@ -9,7 +9,7 @@ include("../CONCEPT/composite_interface.jl")
 import BioStructures
 
 mutable struct Residue <: CompositeInterface
-    res_name_                                   ::Union{String,Nothing}
+    name_                                   ::Union{String,Nothing}
     number_of_children_                         ::Union{Size,Nothing}
     parent_                                     ::Union{Nothing,CompositeInterface}
     previous_                                   ::Union{Nothing,CompositeInterface}
@@ -32,7 +32,7 @@ mutable struct Residue <: CompositeInterface
     Residue() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),nothing,nothing,nothing,nothing,nothing,nothing,
     nothing,nothing,nothing,nothing,false)
 
-    Residue(res_name_                                   ::Union{String,Nothing},
+    Residue(name_                                   ::Union{String,Nothing},
             number_of_children_                         ::Union{Size,Nothing},
             parent_                                     ::Union{Nothing,CompositeInterface},
             previous_                                   ::Union{Nothing,CompositeInterface},
@@ -53,7 +53,7 @@ mutable struct Residue <: CompositeInterface
             selected_                                   ::Union{Bool,Nothing}) = new(
 
 
-            res_name_,
+            name_,
             number_of_children_,
             parent_,
             previous_,
@@ -80,10 +80,12 @@ Residue(res_name::String,num_of_children::Int64, ins_code::Char, res_number::Int
             ins_code, false,res_number,hetero,false)
 
 
-Residue(res::BioStructures.Residue, res_counter::Int64) = Residue(res.name,countatoms(res,expand_disordered = false), res.ins_code,res_counter,res.het_res)
+
+
+Residue(res::BioStructures.Residue) = Residue(res.name,countatoms(res,expand_disordered = false), res.ins_code,res.number,res.het_res)
 Residue(res::BioStructures.DisorderedResidue) = nothing #change this if we need disorderedRes
 
-getName(res::Residue) = return res.res_name_
+getName(res::Residue) = !isnothing(res.name_) ? (res.name_) : "N/A"
 
 
 isAminoAcid(res::Residue) = return hasProperty(res, ("amino_acid",true) )
@@ -102,8 +104,9 @@ isNTerminal(res::Residue) = begin
     return (current_res == res)
 end
 
-Base.show(io::IO, res::Residue) = print(io,
-    "Residue ($(res.is_hetero_ ? "hetero" : "non-hetero")) with ",
-    "name $(res.res_name_), ",
+Base.show(io::IO, res::Residue) =
+    print(io,
+    "Residue-\"$(getName(res.parent_))\" ($(res.is_hetero_ ? "hetero" : "non-hetero")) with ",
+    "name $(getName(res)), ",
     "$(countAtoms(res)) atoms"
 )

@@ -39,7 +39,7 @@ mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeIn
 
     Atom() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,
     nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,
-    nothing,nothing,nothing,false,Dict{Atom, Bond}(),Vector{Tuple{String,Int8}})
+    nothing,nothing,nothing,false,Dict{Atom, Bond}(),Vector{Tuple{String,UInt8}}())
 
 
         Atom(   parent_         ,
@@ -118,6 +118,14 @@ Atom(res::BioStructures.DisorderedAtom) = nothing #change this if we need disord
 
 getBonds(at::Atom) = at.bonds_
 
+collectBonds(atoms::Vector{Atom}) = begin
+    bonds::Vector{Bond} = Bond[]
+    for at in atoms
+        push!(bonds, values(getBonds(at))...)
+    end
+    return bonds
+end
+
 Atom(res::BioStructures.Atom) = begin
     return Atom(String(strip(res.name)), res.coords[1],res.coords[2],res.coords[3],String(strip(res.element)),
     (strip(res.charge) == "") ? nothing : parse(Float64,res.charge),
@@ -129,6 +137,6 @@ setFormalCharge(at::Atom, new_charge::Index) = begin at.formal_charge_ = new_cha
 Base.show(io::IO, at::Atom) = print(io, "Atom[",
     #"$( (isnothing(at.element_)) ? "-" : string(at.element_.symbol_) )|",
     "$(at.element_.symbol_)|",
-    "$( (isnothing(at.parent_) || isnothing(at.parent_.res_name_)) ? "-" : at.parent_.res_name_ )]")
+    "$( (isnothing(at.parent_) || isnothing(at.parent_.name_)) ? "-" : at.parent_.name_ )]")
 
 

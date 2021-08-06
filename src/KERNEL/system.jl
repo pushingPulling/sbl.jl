@@ -23,7 +23,7 @@ mutable struct System <: CompositeInterface
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{CompositeInterface, Nothing}
     selected_                                   ::Bool
-    System()= new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,
+    System()= new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),
                     nothing,nothing,nothing,nothing,nothing,nothing,false)
 
     System( name_                                       ::Union{String,Nothing},

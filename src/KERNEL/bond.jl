@@ -30,9 +30,9 @@ mutable struct Bond
     #CompositeInterface is used as type since we can't use class `Atom`
     #because we can't forward reference it or have circular dependencies.
     #this class is only to be used with Atoms
-        #the atom with the lower serial number is always the first one
-        first_                       ::AtomInterface
-        second_                      ::AtomInterface
+        #the atom with the lower serial number is always the source one
+        source_                      ::AtomInterface
+        target_                      ::AtomInterface
         name_                        ::String
         bond_order_                  ::Order
         bond_type_                   ::BondType
@@ -55,6 +55,7 @@ mutable struct Bond
             new(x,y,name,bond_order,bond_type,Vector{Tuple{String,Int8}}())
         end
 end
+
 
 Bond(at1::AtomInterface, at2::AtomInterface; name::String ="",
         order::Order = ORDER__ANY, type::BondType = TYPE__UNKNOWN) =
@@ -117,6 +118,6 @@ Base.show(io::IO, bond::Bond) = begin
     end
 
     print(io,
-        "$bond_order $bond_type bond: [$(bond.first_)] -> [$(bond.second_)]")
+        "$bond_order $bond_type bond: [$(bond.souce_)] -> [$(bond.target_)]")
 
 end

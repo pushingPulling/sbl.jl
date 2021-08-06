@@ -1,6 +1,6 @@
 include("global.jl")
 #import COMMON\common everywhere you want to import/"using" modules, as well as using globals
-
+import Base.showerror
 
 #this macro inherits the fields of another type
 #assume "Citizen" inherits the fields from "Person"
@@ -20,6 +20,11 @@ capitalize(str::String) = begin
     return string(uppercase(str[1]), lowercase(str[2:end]))
 end
 
+#--------------Exceptions----------------
+struct TooManyIterationsException
+    max_iterations::Int64
+end
+Base.showerror(io::IO, e::TooManyIterationsException) =  print(io, "rached maximum number ($(max_iterations))of iterations")
 
 
 #=

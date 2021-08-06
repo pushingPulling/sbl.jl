@@ -9,11 +9,10 @@ include("../COMMON/common.jl")
 include("selectable.jl")
 include("timeStamp.jl")
 
-import Base.convert, Base.getindex
+import Base.convert
 
 abstract type CompositeInterface <: Selectable end
 
-Base.getindex(x::CompositeInterface,sy::Core.Symbol) = Base.getfield(x,sy)
 
 #=  Preorder, Neutral-Left-Right iterator
     (first current object, then DFS-like left subtree,
@@ -68,7 +67,23 @@ isDescendantOf(this::T, other::S) where {T,S <: CompositeInterface} = begin
 end
 
 
-remove_child(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
+countDescendants(node::Type) where {Type <: CompositeInterface} = begin
+    number_of_descendants::Size = 1
+    if isnothing(node.first_child_)
+        return 1
+    end
+
+    cur = node.first_child_
+    number_of_descendants += countDescendants(cur)
+    while !isnothing(cur.next_)
+        number_of_descendants += countDescendants(cur.next_)
+        cur = cur.next_
+    end
+    return number_of_descendants
+end
+
+
+removeChild(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
     # avoid self-removal and removal of ancestors
     if root == child_node || isDescendantOf(root, child_node)
         return false
@@ -84,12 +99,13 @@ remove_child(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
         root.first_child_ = root.first_child_.next_
 
         if (!isnothing(root.first_child_))
-            first_child_->previous_ = missing
+            first_child_->previous_ = nothing
         else
-            root.last_child_ = missing
+            root.last_child_ = nothing
         end
+        root.number_of_children_ -= (!isnothing(countDescendants(new_node)) ? countDescendants(new_node) : 0)
 
-        root.child.next_ = missing
+        root.child.next_ = nothing
     else
         if root.last_child_ == child_node
             root.last_child_ = child_node.previous_
@@ -101,10 +117,12 @@ remove_child(root::T, child_node::S) where{T,S <: CompositeInterface} = begin
 
             child_node.previous_ = child_node.next_ = missing
         end
+
+        root.number_of_children_ -= countDescendants(child_node)
     end
 
     # delete the child`s parent pointer
-    child_node.parent_ = missing
+    child_node.parent_ = nothing
 
     # adjust some counters
     number_of_children_ -= 1
@@ -147,14 +165,10 @@ getChildren(node::T) where T <: CompositeInterface = begin
 end
 
 #appends new_node to old_node
-appendchild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
+appendChild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
     #avoid self-appending and appending of parent nodes
     if old_node == new_node || isDescendantOf(new_node, old_node)
        return nothing
-    end
-    #check if new_node is already the last child of old_node
-    if new_node == old_node.last_child_
-        return nothing
     end
 
     # if composite has a parent, remove it from there
@@ -164,22 +178,22 @@ appendchild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
 
     # insert it
     if isnothing(old_node.last_child_)
-
         # its the only child - easy!
         old_node.first_child_ = old_node.last_child_ = new_node
-
     else
-
         # append it to the list of children
         old_node.last_child_.next_ = new_node
         new_node.previous_ = old_node.last_child_
         old_node.last_child_ = new_node
     end
 
+    isnothing(old_node.number_of_children_) && ( old_node.number_of_children_ = 0)
+    old_node.number_of_children_ += countDescendants(new_node)
+
     new_node.parent_ = old_node
-    if typeof(old_node) != Atom
-        old_node.number_of_children_ += 1
-    end
+
+
+
     #=
 
     # update modification time stamp
@@ -198,6 +212,36 @@ appendchild(old_node::T, new_node::S) where {T,S <: CompositeInterface} = begin
 
 end
 
+isSibling(comp::CompositeInterface, other::CompositeInterface) = begin
+    return (other in getChildren(comp))
+end
+
+appendSibling(comp::T, other::T) where T<:CompositeInterface = begin
+    isSibling(comp, other) && return
+    temp = comp.next_
+    comp.next_ = other
+    other.previous_ = comp
+    other.next_ = temp
+    other.parent_ = comp.parent_
+
+    if !isnothing(comp.parent_)
+        comp.parent_ += contDescendants(other)
+    end
+end
+
+prependSibling(comp::T, other::T) where T<:CompositeInterface = begin
+    isSibling(comp, other) && return
+    temp = comp.previous_
+    comp.previous_ = other
+    other.previous_ = temp
+    other.next_ = comp
+    other.parent_ = comp.parent_
+
+    if !isnothing(comp.parent_)
+        comp.parent_ += contDescendants(other)
+    end
+end
+
 countDescendants_iterate(node::Type) where {Type <: CompositeInterface} = begin
     number_of_descendants::Size = 0
     for descendants in node
@@ -206,21 +250,6 @@ countDescendants_iterate(node::Type) where {Type <: CompositeInterface} = begin
     return number_of_descendants
 end
 
-
-countDescendants(node::Type) where {Type <: CompositeInterface} = begin
-    number_of_descendants::Size = 1
-    if isnothing(node.first_child_)
-        return 1
-    end
-
-    cur = node.first_child_
-    number_of_descendants += countDescendants(cur)
-    while !isnothing(cur.next_)
-        number_of_descendants += countDescendants(cur.next_)
-        cur = cur.next_
-    end
-    return number_of_descendants
-end
 
 countAtoms(node::CompositeInterface) = begin
     number_of_atoms::Size = 0
@@ -274,6 +303,18 @@ collectAtoms(node::CompositeInterface) = begin
     recursive_collect(node,Atom)
 end
 
+collectAtoms(node::CompositeInterface, selector::Function) = begin
+    filter!(selector, collectAtoms(node))
+end
+
+collectResidues(node::CompositeInterface, selector::Function) = begin
+    filter!(selector, collectResidues(node))
+end
+collectChains(node::CompositeInterface, selector::Function) = begin
+    filter!(selector, collectChains(node))
+end
+
+
 collectResidues(node::CompositeInterface) = begin
     recursive_collect(node,Residue)
 end
@@ -284,11 +325,13 @@ end
 
 collectBonds(node::CompositeInterface) = begin
     bonds = Set{Bond}()
-    for at in collectAtoms(internal_representation)
+    for at in collectAtoms(node)
         length(values(getBonds(at))) > 0 && push!(bonds, values(getBonds(at))...)
     end
     return collect(bonds)
 end
+
+
 
 function clearSelectionTree(x::CompositeInterface)
     for node in x
@@ -313,13 +356,13 @@ getProperties(comp::CompositeInterface) = begin
     return comp.properties_
 end
 
-hasProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
-    if any([property[1] == x[1] for x in getProperties(comp) ])
+hasProperty(comp::CompositeInterface, property::String) = begin
+    if any([property == x[1] for x in getProperties(comp) ])
        return true
     end
     return false
 end
-hasProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = hasProperty(comp,(property[1],UInt8(property[2])))
+
 
 getProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property)
@@ -330,7 +373,7 @@ getProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
 end
 
 setProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
-    if hasProperty(comp,property)
+    if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
         getProperties(comp)[index][2] = property[2]
     else
@@ -341,15 +384,15 @@ setProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = setPropert
 
 getName(comp::CompositeInterface) = begin
 #chain and residue override this function in their respective julia file
-    if typeof(comp) == Chain
-        return comp.name_
-    end
+    !isnothing(comp.name_) ? (return comp.name_) : "-"
 end
+
+getName(::Nothing) = "N/A"
 
 
 
 Base.show(io::IO, comp::CompositeInterface) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
-countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms.")
+countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms")
 
 
 

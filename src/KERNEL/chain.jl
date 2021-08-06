@@ -7,7 +7,7 @@ chain:
 include("../CONCEPT/composite_interface.jl")
 
 mutable struct Chain <: CompositeInterface
-    id_                                         ::Union{String, Nothing}
+    id_                                         ::Union{Char, Nothing}
     number_of_children_                         ::Union{Size,Nothing}
     parent_                                     ::Union{CompositeInterface, Nothing}
     previous_                                   ::Union{CompositeInterface, Nothing}
@@ -22,9 +22,9 @@ mutable struct Chain <: CompositeInterface
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{CompositeInterface, Nothing}
     selected_                                   ::Bool
-    Chain() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,nothing,
+    Chain() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),
                     nothing,nothing,nothing,nothing,nothing,nothing,false)
-    Chain(   id_                                         ::Union{String, Nothing},
+    Chain(   id_                                         ::Union{Char, Nothing},
              number_of_children_                         ::Union{Size,Nothing},
              parent_                                     ::Union{CompositeInterface, Nothing},
              previous_                                   ::Union{CompositeInterface, Nothing},
@@ -63,5 +63,5 @@ end
 Chain(res::BioStructures.Chain) = Chain(res.id, countresidues(res,expand_disordered = false),nothing,
 nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),false,0,0,nothing,nothing,nothing,false)
 
-getName(chain::Chain) = return chain.id_
+getName(chain::Chain) = !isnothing(chain.id_) ? (chain.id_) : "-"
 

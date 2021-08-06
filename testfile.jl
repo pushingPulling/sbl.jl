@@ -302,21 +302,55 @@ using BioStructures
 #end
 
 ##--readpdb--##
-include("src/CONCEPT/composite.jl")
-include("src/KERNEL/dataformats.jl")
+#include("src/CONCEPT/composite.jl")
+#include("src/KERNEL/dataformats.jl")
 
 
 #println(fieldnames(typeof(struc.models[1].chains["A"].residues.vals[1])))
 #println(struc.models[1].chains["A"])
-internal_representation = System("1EN2.pdb", PDB)
+#internal_representation = System("1EN2.pdb", PDB)
 
-struc = read("1EN2.pdb",BioStructures.PDB)
+
 #println([(getName(x),x.insertion_code_) for x in collectResidues(internal_representation)] )
-println( [getName(x) for x in collectResidues(internal_representation) if isAminoAcid(x)] )
-println( length([getName(x) for x in collectResidues(internal_representation) if isAminoAcid(x)]) )
-println( length(collectResidues(internal_representation)))
-println(length(collectAtoms(internal_representation)))
-#do collectBonds
-#integrate into findfirst
-#make findall -> many already defined functions applicable
+#println( [(getName(x), x.res_number_) for x in collectResidues(internal_representation) if isAminoAcid(x)] )
+#for x in collectResidues(internal_representation)
+#    if isAminoAcid(x)
+#        println(getName(x), x.res_number_)
+#    end
+#end
+#println( "count of all AS ",length([getName(x) for x in collectResidues(internal_representation) if isAminoAcid(x)]) )
+#println( "count of all res ",length(collectResidues(internal_representation)))
+#tmp = [x.serial_ for x in collectAtoms(internal_representation)]
+#println(length(collectAtoms(internal_representation)))
+
+#t = [collectResidues(internal_representation)[y] for y in [15,16,28,45,74,79]]
+#for (x,ln) in zip(t,[15,16,28,45,74,79])
+#    println(ln," ",[getChildren(x)])
+#end
+
+#xd = collectChains(internal_representation)[1]
+#res = [10,14,80,81]
+#for id in res
+#    println([getName(x) for x in collectAtoms(collectResidues(xd)[id])])
+#end
+
+#println( [x.serial_ for x in filter( (x) -> x.serial_ in [10,14,28,74,79] ,collectAtoms(internal_representation) )] )
+using StatProfilerHTML
+#struc = read("5ire.pdb", BioStructures.PDB)
+
+
+
+
+
+include("src/QSAR/ring_perception_processor.jl")
+
+internal = System("G:/Python Programme/sbl.jl/glucose.pdb")
+
+println(internal)
+#graph = MolecularGraph(internal)
+#println(length(graph.bonds_to_edges_))
+#println(@which(internal[1][1]))
+#println(collectResidues(internal))
+
+println(calculateSSSR(internal))
 
