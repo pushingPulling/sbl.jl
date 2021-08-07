@@ -5,9 +5,7 @@ ring_perception_processor:
 - Date: 2021-08-05
 =#
 
-include("../KERNEL/dataformats.jl")
 include("../STRUCTURE/simple_molecular_graph.jl")
-using Bijections
 
 struct PathMessage
     beep    ::BitVector

@@ -4,7 +4,7 @@ system:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("../CONCEPT/composite_interface.jl")
+include("residue.jl")
 import BioStructures
 
 mutable struct System <: CompositeInterface

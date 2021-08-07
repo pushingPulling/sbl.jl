@@ -5,8 +5,7 @@ composite:
 - Date: 2021-06-04
 =#
 
-
-include("../COMMON/common.jl")
+include("timeStamp.jl")
 include("composite_interface.jl")
 import BioStructures
 

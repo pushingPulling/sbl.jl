@@ -7,7 +7,6 @@ composite_interface:
 
 include("../COMMON/common.jl")
 include("selectable.jl")
-include("timeStamp.jl")
 
 import Base.convert
 

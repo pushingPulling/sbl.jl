@@ -5,8 +5,6 @@ atom:
 - Date: 2021-06-01
 =#
 
-include("atom_interface.jl")
-include("../COMMON/common.jl")
 include("PTE.jl")
 include("bond.jl")
 using StaticArrays

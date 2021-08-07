@@ -246,9 +246,6 @@ println(t," ", t2,"ms")
 #include("src/CONCEPT/composite.jl")
 #include("src/KERNEL/dataformats.jl")
 
-import Base.convert
-using BioStructures
-
 #struc = read("2lzx.pdb", PDB)
 
 #println(struc)
@@ -352,5 +349,5 @@ println(internal)
 #println(@which(internal[1][1]))
 #println(collectResidues(internal))
 
-println(calculateSSSR(internal))
+#println(calculateSSSR(internal))
 

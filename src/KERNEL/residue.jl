@@ -4,12 +4,12 @@ fragment:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("../CONCEPT/composite_interface.jl")
+include("chain.jl")
 
 import BioStructures
 
 mutable struct Residue <: CompositeInterface
-    name_                                   ::Union{String,Nothing}
+    name_                                       ::Union{String,Nothing}
     number_of_children_                         ::Union{Size,Nothing}
     parent_                                     ::Union{Nothing,CompositeInterface}
     previous_                                   ::Union{Nothing,CompositeInterface}

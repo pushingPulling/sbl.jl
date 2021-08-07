@@ -4,27 +4,21 @@ kernel_functions:
 - Author: Dan
 - Date: 2021-07-27
 =#
-include("../COMMON/common.jl")
-include("residue.jl")
-include("..//CONCEPT/composite.jl")
-include("atom.jl")
-include("chain.jl")
-include("system.jl")
+
 include("dataformats.jl")
 import Base.<, Base.>
-using DataFrames
 using BioStructures
 
 #this code creates an ordering reflecting the hierarchy of the kernel classes
 #e.g. System > Chain is true, System < Chain is false, System < System is false
-const ops = [:<,:>]
-const type = [Atom,Residue,Chain,System]
-for x in type
-    for y in type
-        for op in ops
+const comparisonops = [:<,:>]
+const kerneltype = [Atom,Residue,Chain,System]
+for x in kerneltype
+    for y in kerneltype
+        for op in comparisonops
             @eval Base.$op(::Type{$x},::Type{$y}) =
-                  (Base.$op(findfirst(lambda -> lambda == $x,$type),
-                           findfirst(lambda -> lambda == $y,$type)))
+                  (Base.$op(findfirst(lambda -> lambda == $x,$kerneltype),
+                           findfirst(lambda -> lambda == $y,$kerneltype)))
         end
     end
 end

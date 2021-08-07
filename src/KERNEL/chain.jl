@@ -4,7 +4,7 @@ chain:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("../CONCEPT/composite_interface.jl")
+include("atomBijection.jl")       #seems dumb but in this build this includes all dependecies for this file
 
 mutable struct Chain <: CompositeInterface
     id_                                         ::Union{Char, Nothing}

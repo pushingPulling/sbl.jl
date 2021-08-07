@@ -5,8 +5,6 @@ PTE:
 - Date: 2021-06-03
 =#
 
-include("../COMMON/common.jl")
-
 
 
 struct Element
