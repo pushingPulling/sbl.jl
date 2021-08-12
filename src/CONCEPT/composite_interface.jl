@@ -374,10 +374,9 @@ end
 setProperty(comp::CompositeInterface, property::Tuple{String,UInt8}) = begin
     if hasProperty(comp,property[1])
         index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
-        getProperties(comp)[index][2] = property[2]
-    else
-        push!(comp.properties_, property)
+        deleteat!(getProperties(comp), index)
     end
+    push!(comp.properties_, property)
 end
 setProperty(comp::CompositeInterface, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
 

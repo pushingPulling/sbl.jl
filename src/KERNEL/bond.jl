@@ -36,7 +36,7 @@ mutable struct Bond
         name_                        ::String
         bond_order_                  ::Order
         bond_type_                   ::BondType
-        propertyies_                 ::Vector{Tuple{String,Int8}}
+        properties_                  ::Vector{Tuple{String,UInt8}}
 
 
         Bond(x::CompositeInterface, y::CompositeInterface, name::String, bond_order::Order, bond_type::BondType) = begin
@@ -88,6 +88,37 @@ printBonds(at::AtomInterface, io::IO = Base.stdout) = begin
      join(keys(at.bonds_),", "),". ")
 end
 
+getProperties(comp::Bond) = begin
+    return comp.properties_
+end
+
+hasProperty(comp::Bond, property::String) = begin
+    if any([property == x[1] for x in getProperties(comp) ])
+       return true
+    end
+    return false
+end
+
+
+getProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
+    if hasProperty(comp,property)
+        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        return getProperties(comp)[index][2]
+    end
+    return nothing
+end
+
+setProperty(comp::Bond, property::Tuple{String,UInt8}) = begin
+    if hasProperty(comp,property[1])
+        index = findfirst((x::Tuple{String,UInt8})-> property[1] == x[1], getProperties(comp))
+        deleteat!(getProperties(comp), index)
+    end
+    push!(comp.properties_, property)
+
+end
+setProperty(comp::Bond, property::Tuple{String,Bool}) = setProperty(comp,(property[1],UInt8(property[2])))
+
+
 
 
 Base.show(io::IO, bond::Bond) = begin
@@ -118,6 +149,6 @@ Base.show(io::IO, bond::Bond) = begin
     end
 
     print(io,
-        "$bond_order $bond_type bond: [$(bond.souce_)] -> [$(bond.target_)]")
+        "$bond_order $bond_type bond: [$(bond.source_)] -> [$(bond.target_)]")
 
 end

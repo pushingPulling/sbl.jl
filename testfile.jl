@@ -349,5 +349,9 @@ println(internal)
 #println(@which(internal[1][1]))
 #println(collectResidues(internal))
 
-#println(calculateSSSR(internal))
+sssr,params = calculateSSSR(internal)
+
+foreach(println,[[getName(y) for y in x] for x in sssr])
+#@printfields(params)
+#println(filter(x->hasProperty(x,"InRing"), collectAtoms(internal)))
 

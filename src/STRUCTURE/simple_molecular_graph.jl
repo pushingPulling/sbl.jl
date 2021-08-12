@@ -15,6 +15,7 @@ mutable struct Edge
     bond_   ::Bond
     Edge(source::AbstractNode, target::AbstractNode, bond::Bond) = new(source, target, bond)
 end
+Base.show(io::IO, edge::Edge) = print(io, "E[$(edge.source_) | $(edge.target_)]")
 
 
 mutable struct Node <: AbstractNode
@@ -22,6 +23,8 @@ mutable struct Node <: AbstractNode
     atom_           ::Atom
     Node(at::Atom) = new(Edge[], at)
 end
+
+Base.show(io::IO, node::Node) = print(io, "N[$(node.atom_.serial_)]")
 
 
 #atoms_to_nodes_ relates atoms to nodes in this Graph and bodns_to_edges_ bonds to edges
@@ -35,27 +38,27 @@ mutable struct MolecularGraph <: AbstractMolGraph
 end
 
 
-getNodes(graph::MolecularGraph) = begin
-    return values(atoms_to_nodes_)
+collectNodes(graph::MolecularGraph) = begin
+    return values(graph.atoms_to_nodes_)
 end
 
-getPartnerNodes(node::Node) = begin
-    return values(node.atoms_to_nodes_)
+collectPartnerNodes(node::Node) = begin
+    return [x.source_ == node ? x.target_ : x.source_ for x in values(node.adjacent_edges_)]
 end
 
-getPartnerEdges(node::Node) = begin
-    return values(node.bonds_to_edges_)
+collectPartnerEdges(node::Node) = begin
+    return values(node.adjacent_edges_)
 end
 
-getEdges(graph::MolecularGraph) = begin
-    return values(bonds_to_edges_)
+collectEdges(graph::MolecularGraph) = begin
+    return values(graph.bonds_to_edges_)
 end
 
-getNumberOfNodes(graoh::MolecularGraph) = begin
+getNumberOfNodes(graph::MolecularGraph) = begin
     return length(graph.atoms_to_nodes_)
 end
 
-getNumberOfEdges(graoh::MolecularGraph) = begin
+getNumberOfEdges(graph::MolecularGraph) = begin
     return length(graph.bonds_to_edges_)
 end
 

@@ -16,6 +16,12 @@ macro inherit(name, base, fields)
     return res
 end
 
+macro printfields(object)
+    return :(for name in fieldnames(typeof($object))
+        println(name," ",typeof(getfield($object,name))," ", getfield($object,name))
+    end)
+end
+
 capitalize(str::String) = begin
     return string(uppercase(str[1]), lowercase(str[2:end]))
 end
@@ -24,7 +30,7 @@ end
 struct TooManyIterationsException
     max_iterations::Int64
 end
-Base.showerror(io::IO, e::TooManyIterationsException) =  print(io, "rached maximum number ($(max_iterations))of iterations")
+Base.showerror(io::IO, e::TooManyIterationsException) =  print(io, "rached maximum number ($(e.max_iterations)) of iterations")
 
 
 #=
