@@ -8,6 +8,8 @@ simple_molecular_graph:
 include("../KERNEL/kernel_functions.jl")
 abstract type AbstractNode end
 abstract type AbstractMolGraph end
+import Base.==
+
 
 mutable struct Edge
     source_ ::AbstractNode
@@ -16,6 +18,7 @@ mutable struct Edge
     Edge(source::AbstractNode, target::AbstractNode, bond::Bond) = new(source, target, bond)
 end
 Base.show(io::IO, edge::Edge) = print(io, "E[$(edge.source_) | $(edge.target_)]")
+(==)(x::Edge, y::Edge) = return (x === y || x.bond_ == y.bond_)
 
 
 mutable struct Node <: AbstractNode
@@ -23,17 +26,17 @@ mutable struct Node <: AbstractNode
     atom_           ::Atom
     Node(at::Atom) = new(Edge[], at)
 end
-
-Base.show(io::IO, node::Node) = print(io, "N[$(node.atom_.serial_)]")
+Base.show(io::IO, node::AbstractNode) = print(io, "N[$(node.atom_.serial_)]")
 
 
 #atoms_to_nodes_ relates atoms to nodes in this Graph and bodns_to_edges_ bonds to edges
  #
 mutable struct MolecularGraph <: AbstractMolGraph
 
-    atoms_to_nodes_::Dict{Atom,Node}
+    atoms_to_nodes_::Dict{Atom,AbstractNode}
     bonds_to_edges_::Dict{Bond,Edge}
-    MolecularGraph() = new(Dict{Atom,Node}(), Dict{Bond,Edge}())
+    MolecularGraph() = new(Dict{Atom,AbstractNode}(), Dict{Bond,Edge}())
+    MolecularGraph(NodeType) = new(Dict{Atom,NodeType}(), Dict{Bond,Edge}())
 
 end
 
@@ -42,11 +45,11 @@ collectNodes(graph::MolecularGraph) = begin
     return values(graph.atoms_to_nodes_)
 end
 
-collectPartnerNodes(node::Node) = begin
+collectPartnerNodes(node::AbstractNode) = begin
     return [x.source_ == node ? x.target_ : x.source_ for x in values(node.adjacent_edges_)]
 end
 
-collectPartnerEdges(node::Node) = begin
+collectPartnerEdges(node::AbstractNode) = begin
     return values(node.adjacent_edges_)
 end
 
@@ -62,11 +65,13 @@ getNumberOfEdges(graph::MolecularGraph) = begin
     return length(graph.bonds_to_edges_)
 end
 
-newNode(graph::MolecularGraph, at::Atom) = begin
+newNode(graph::MolecularGraph, at::Atom, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
     if haskey(graph.atoms_to_nodes_, at)
         return false
     end
-    graph.atoms_to_nodes_[at] = Node(at)
+    temp::NodeType = NodeType(at)
+    graph.atoms_to_nodes_[at] = temp
+    return temp
 end
 
 deleteEdge(graph::MolecularGraph, e::Edge) = begin
@@ -77,7 +82,7 @@ deleteEdge(graph::MolecularGraph, e::Edge) = begin
     filter!(x -> !(x == e),target.adjacent_edges)
 end
 
-deleteNode(graph::MolecularGraph,node::Node) = begin
+deleteNode(graph::MolecularGraph,node::AbstractNode) = begin
     for edge in node.adjacent_edges_
         deleteEdge(graph, edge)
     end
@@ -99,7 +104,7 @@ newEdge(graph::MolecularGraph, bond::Bond) = begin
     push!(graph.atoms_to_nodes_[bond.target_].adjacent_edges_, temp)
 end
 
-MolecularGraph(root::T) where T<:Union{System, Chain, Residue} = begin
+MolecularGraph(root::T, NodeType::Type{typ} = Node) where typ<:AbstractNode where T<:Union{System, Chain, Residue} = begin
     graph = MolecularGraph()
     atoms = collectAtoms(root)
     for at in atoms
@@ -110,4 +115,30 @@ MolecularGraph(root::T) where T<:Union{System, Chain, Residue} = begin
         newEdge(graph, bond)
     end
     return graph
+end
+
+
+breadthFirstSearch(graph::MolecularGraph, root::Node, NodeType::Type{typ} = Node) where typ<:AbstractNode = begin
+    bfs = MolecularGraph(NodeType)
+    q::Queue{NodeType} = Queue{NodeType}()
+    visited_nodes::Set{NodeType} = Set{NodeType}()
+    cur::NodeType = root
+    newNode(bfs,root.atom_, NodeType)
+    push!(visited_nodes, root)
+    cur = root
+    while true
+        for edge in collectPartnerEdges(cur)
+            neighbour::Node = edge.source_ == cur ? edge.target_ : edge.source_
+            if !(neighbour in visited_nodes)
+                push!(visited_nodes, neighbour)
+                enqueue!(q, neighbour)
+
+                newNode(bfs, neighbour.atom_, BackpointingNode)
+                newEdge(bfs, edge.bond_)
+            end
+        end
+        isempty(q) && break
+        cur = dequeue!(q)
+    end
+    return bfs
 end

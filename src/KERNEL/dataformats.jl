@@ -530,10 +530,10 @@ parsePDB(path::String) = begin
 
     latest_chain::Chain = Chain()  #assume chains are named in alphabetical order with capitalized letters
     latest_residue::Residue = Residue()
-    latest_residue.res_number_ = 0
+    latest_residue.res_number_ = -127   #init value, which hopefully is NOT the same as the first residue-number in the file
     atom_counter::Int = 0
 
-    latest_chain.id_ = 'A'
+    latest_chain.id_ = '-'  #init value, which hopefully is NOT the same as the first chain id in the file
     appendChild(root, latest_chain)
 
     seen_header = false
@@ -590,6 +590,7 @@ parsePDB(path::String) = begin
                                 line[17] in (' ','A')
                 atom_counter += 1
                 record_chain_id = line[22]
+                latest_chain.id_ == '-' && (latest_chain.id_ = record_chain_id)
                 record_residue_name = strip(line[18:20])
                 record_residue_number = parse(Int64,strip(line[23:26]))
 
@@ -620,7 +621,6 @@ parsePDB(path::String) = begin
 
 
             if startswith(line, "CONECT")
-
                 if seen_atoms == false
                     #atoms = collectAtoms(root)      #fu
                     seen_atoms = true

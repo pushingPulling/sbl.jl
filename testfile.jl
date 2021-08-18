@@ -339,8 +339,10 @@ using StatProfilerHTML
 
 
 
-include("src/QSAR/ring_perception_processor.jl")
+#include("src/QSAR/ring_perception_processor.jl")
+include("src/QSAR/minimum_cycle_basis.jl")
 
+#internal = System("G:/Python Programme/sbl.jl/1,2-Benzodiazepine.pdb")
 internal = System("G:/Python Programme/sbl.jl/glucose.pdb")
 
 println(internal)
@@ -349,9 +351,42 @@ println(internal)
 #println(@which(internal[1][1]))
 #println(collectResidues(internal))
 
-sssr,params = calculateSSSR(internal)
+#sssr,params = calculateSSSR(internal)
 
-foreach(println,[[getName(y) for y in x] for x in sssr])
+#println("resulting rings")
+#foreach(println,[sort!([y.serial_ for y in x]) for x in sssr])
 #@printfields(params)
 #println(filter(x->hasProperty(x,"InRing"), collectAtoms(internal)))
+
+graph = MolecularGraph()
+a = Atom(); a.serial_ = 1
+b = Atom(); b.serial_ = 2
+c = Atom(); c.serial_ = 3
+test= newNode(graph,a)
+newNode(graph,b)
+newNode(graph,c)
+
+ab = Bond(a,b)
+ac = Bond(a,c)
+bc = Bond(b,c)
+
+newEdge(graph, ab)
+newEdge(graph, ac)
+newEdge(graph, bc)
+
+bfs = breadthFirstSearch(graph, test)
+
+@printfields(graph)
+@printfields(bfs)
+
+bfs_edges = Set([x.bond_ for x in collectEdges(bfs)])
+graph_edges = Set([x.bond_ for x in collectEdges(graph)])
+
+
+println([graph.bonds_to_edges_[x] for x in setdiff(graph_edges, bfs_edges)])
+println("old code workey")
+
+edges, atoms = SSSR(internal)
+foreach(println, edges)
+println(atoms)
 

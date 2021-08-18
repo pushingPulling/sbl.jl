@@ -132,9 +132,9 @@ end
 
 setFormalCharge(at::Atom, new_charge::Index) = begin at.formal_charge_ = new_charge end
 
-Base.show(io::IO, at::Atom) = print(io, "Atom[",
+Base.show(io::IO, at::Atom) = print(io, "Atom$(at.serial_)[",
     #"$( (isnothing(at.element_)) ? "-" : string(at.element_.symbol_) )|",
-    "$(at.element_.symbol_)|",
+    "$( (isnothing(at.element_) || isnothing(at.element_.symbol_)) ? "-" : at.element_.symbol_)|",
     "$( (isnothing(at.parent_) || isnothing(at.parent_.name_)) ? "-" : at.parent_.name_ )]")
 
 

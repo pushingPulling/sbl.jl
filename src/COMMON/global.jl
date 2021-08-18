@@ -70,3 +70,4 @@ const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_RUN_COUNT = 1
 BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS = 20
 BALL_Properties = String["amino_acid", "InRing"]
+const BALL_HALF_OF_MAX_RING_SIZE = 20		#Only detect Rings in SSSR with maximally 2*BALL_HALF_OF_MAX_RING_SIZE atoms

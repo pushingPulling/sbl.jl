@@ -46,6 +46,14 @@ end
 
 Base.show(io::IO, tn::TNode) = print(io, "TN[$(tn.serial )]")
 
+printbeep(beep, index_to_edge) = begin
+
+    a = collect(enumerate(beep))
+    b = filter(x->x[2], a)
+    c = [i for (i,b) in b]
+    println([index_to_edge[index] for index in c])
+
+end
 
 nodeIsNew(beep::BitVector, node::Node, index_to_edge::Bijection{Int64,Edge}) = begin
     for (i,bit) in enumerate(beep)
@@ -143,15 +151,12 @@ BalducciPearlmanRingSelector_(beer::BitVector, params::BalducciParams) = begin
         if new_beer[i]
             r = r_begin
             while(r< length(matrix))
-                for c in 1:length(matrix[r])
-                    if matrix[r][c]
-                        hi_bit = c
-                        break
-                    end
-                end
+                hi_bit = findfirst(x->x, matrix[r])
                 if i == hi_bit
                     r_begin = r+1
+                    #println("newbef ",new_beer," ",sum(new_beer))
                     new_beer .⊻= matrix[r]
+                    #println("newAft ",new_beer," ",sum(new_beer))
                     break
                 end
                 r +=1
@@ -163,21 +168,11 @@ BalducciPearlmanRingSelector_(beer::BitVector, params::BalducciParams) = begin
         return BalducciParams(rings, matrix ,forwarded_rings ,tested_beers ,all_small_rings, all_small_beers)
     end
 
-    beer_index::Int64 = findfirst(x->x, new_beer)  #finds the first "true" value in vector
 
-    inserted = false
-    cur_col::Int64 = 1
-    for (i,row) in enumerate(matrix)
-        while !row[cur_col]
-            cur_col += 1
-        end
-        if cur_col > beer_index
-            insert!(matrix, i, new_beer)
-            inserted = true
-            break
-        end
-    end
-    !inserted && insert!(matrix, length(matrix), new_beer)
+    insert!(matrix, searchsortedfirst(matrix,new_beer,rev=true), new_beer)
+    #println("-----------------------")
+    #foreach(println, matrix)
+    #println("-----------------------")
 
     push!(rings, beer)
     return BalducciParams(rings, matrix ,forwarded_rings ,tested_beers ,all_small_rings,all_small_beers )
@@ -195,11 +190,11 @@ send(tnode::TNode, node_to_tnode::Bijection{Node,TNode}, index_to_edge::Bijectio
             else
                 partner = node_to_tnode[edge.source_]
             end
-
             if (partner != pm.nlast) && !pm.beep[index_to_edge(edge)] &&
                         nodeIsNew(pm.beep, node_to_tnode(partner), index_to_edge)
                 new_pm = PathMessage(pm.beep, pm.nfirst, tnode, pm.efirst)
                 new_pm.beep[index_to_edge(edge)] = true
+                print("send: $a $edge"); printbeep(new_pm.beep, index_to_edge)
                 push!(partner.receive_buffer, new_pm)
                 #println("sender: receivebuf ", length(partner.receive_buffer), " ", partner, " snd: ", tnode)
             end
@@ -220,7 +215,7 @@ receive(tnode::TNode, forwarded_rings::Vector{BitVector}) = begin
         if !haskey(array_A, pm.efirst)
             #println("nothas ", pm.efirst)
             array_A[pm.efirst] = Dict{TNode, Vector{PathMessage}}()
-            array_A[pm.efirst][pm.nfirst] = PathMessage[pm]
+            array_A[pm.efirst][pm.nfirst] = PathMessage[]
         end
         push!(array_A[pm.efirst][pm.nfirst], pm)
     #    println("len pmvec ",length(array_A[pm.efirst][pm.nfirst]))
@@ -231,8 +226,7 @@ receive(tnode::TNode, forwarded_rings::Vector{BitVector}) = begin
     for tnode_to_pm_vector in values(array_A)
         for (tnode, pm_vector) in pairs(tnode_to_pm_vector)
             if length(pm_vector) > 1
-                 println("receive $(tnode.serial) newsmsg")
-                 println("receive ")
+                 #println("receive $(tnode.serial) newsmsg")
                  new_message = PathMessage[]
                  push!(new_message, pm_vector[1])
                  push!(do_not_forward, [pm.beep for pm in pm_vector[2:end]]...)
@@ -244,40 +238,48 @@ receive(tnode::TNode, forwarded_rings::Vector{BitVector}) = begin
 
     #inverse edge collisions
     array_B::Dict{TNode, Vector{PathMessage}} = Dict{TNode, Vector{PathMessage}}()
-    tnode_to_pms = collect(values(array_A))
-    for tnode_to_pm_vector in values(array_A)
-    println("values array_A ", values(array_A))
-
-        #take out 2 dicts of values(array_A) and compare dict1.pm to dict2.pm
-    #for i in 1:length(tnode_to_pms)
-        #for j in i+1:length(tnode_to_pms)
+    tnode_to_pms = collect(values(array_A)) #produces a list of dicts: tnode->pm_vector
+    pms = [collect(values(x))[1][1] for x in tnode_to_pms]  #flattens all of the dictionaries' items
+    tnodes = [collect(keys(x))[1] for x in tnode_to_pms]
+    println("recbeep ",[x.beep for x in pms])
 
 
-
-
-        tnodes = collect(keys(tnode_to_pm_vector))
-        pm_vectors = collect(values(tnode_to_pm_vector))
-        println("receive $(tnode.serial) lenpm $(length(pm_vectors))")
-        for i in 1:length(pm_vectors)
-            for j in i + 1:length(pm_vectors)
-                if haveSingleIntersection(pm_vectors[i][1].beep, pm_vectors[j][1].beep)
-                    beer::BitVector = pm_vectors[i][1].beep .| pm_vectors[j][1].beep    # .| is the broadcasted or operator
-                    println("receive $(tnode.serial) sum beer = $(sum(beer))")
+    #println("---")
+    #foreach(println,pms)
+    #println("---end")
+    #take out 2 dicts of values(array_A) and compare dict1.pm to dict2.pm
+    i = 0
+    for _ in 1:length(array_A)
+        for i in 1:length(tnode_to_pms)
+            for j in i+1:length(tnode_to_pms)
+            #println("$i - $(pms[i].beep) $(haveSingleIntersection(pms[i].beep, pms[j].beep))")
+            #println("- $j $(pms[j].beep) $(haveSingleIntersection(pms[i].beep, pms[j].beep))")
+            #println("//////////////////////////////////////////////////////////////////////////")
+                #haveSingleIntersection(pms[i].beep, pms[j].beep) && println("single $(haveSingleIntersection(pms[i].beep, pms[j].beep))")
+                if haveSingleIntersection(pms[i].beep, pms[j].beep)
+                    println(i ," " ,j)
+                    #println("receive beer")
+                    beer::BitVector = pms[i].beep .| pms[j].beep    # .| is the broadcasted or operator
+                    println(i ," " ,j, " ",sum(beer))
+                    #println("receive $(tnode.serial) sum beer = $(sum(beer))")
                     push!(forwarded_rings, beer)    #in params?
-                    push!(do_not_forward, pm_vectors[i].beep, pm_vectors[j].beep)
+                    push!(do_not_forward, pms[i].beep, pms[j].beep)
                 end
             end
+
             if !haskey(array_B, tnodes[i])
                 array_B[tnodes[i]] = PathMessage[]
             end
-            push!(array_B[tnodes[i]], pm_vectors[i][1])
+            push!(array_B[tnodes[i]], pms[i])
         end
     end
 
     #handle collisions
     for (tnode,pm_vectors) in pairs(array_B)
+        #println("test ",length(pm_vectors))
         for i in 1:length(pm_vectors)
             for j in i+1:length(pm_vectors)
+                #haveZeroIntersection(pm_vectors[i].beep, pm_vectors[j].beep) && println("interzero ", haveZeroIntersection(pm_vectors[i].beep, pm_vectors[j].beep))
                 if haveZeroIntersection(pm_vectors[i].beep, pm_vectors[j].beep)
                     beer = pm_vectors[i].beep .| pm_vectors[j].beep
                     push!(forwarded_rings, beer)
@@ -289,6 +291,7 @@ receive(tnode::TNode, forwarded_rings::Vector{BitVector}) = begin
 
 
     for pm in tnode.receive_buffer
+    #!(pm.beep in do_not_forward) && println("t ", !(pm.beep in do_not_forward))
         if !(pm.beep in do_not_forward)
             push!(tnode.send_buffer, pm)
         end
@@ -313,6 +316,7 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
 
     num_nodes = getNumberOfNodes(graph)
     num_edges = getNumberOfEdges(graph)
+    println("noded ",num_nodes, " ", num_edges)
 
     node_to_tnode::Bijection{Node,TNode} = Bijection{Node,TNode}()
     for node in collectNodes(graph)
@@ -328,9 +332,10 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
 
     #fill in the messages
     for node in collectNodes(graph)
+        println(node, " ",collectPartnerEdges(node))
         for edge in collectPartnerEdges(node)
-        #edge.source_ == node && println(node.atom_.serial_, " ", edge)
-            beep::BitVector = falses((num_nodes))
+            #edge.source_ == node && println(node.atom_.serial_, " ", edge)
+            beep::BitVector = falses((num_edges))
             toggleBit(beep, index_to_edge(edge))
 
             if edge.source_ == node
@@ -338,10 +343,13 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
             else
                  tnode = node_to_tnode[edge.source_]
             end
+            println("-- $node $tnode $beep $(index_to_edge(edge)) $(index_to_edge[index_to_edge(edge)]) ")
+            print("-- ");printbeep(beep, index_to_edge)
             pm = PathMessage(beep, tnode, tnode, edge)
             push!(node_to_tnode[node].send_buffer, pm)
         end
     end
+
     #println("tnodes - expect 1 tnode per edge,len: $(length(node_to_tnode))")
     #foreach(println, node_to_tnode)
     num_rings::Int64 = num_edges - num_nodes +1
@@ -349,30 +357,56 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
 
     graph_nodes = collectNodes(graph)
 #--------------------
-    while length(rings) < num_rings
+    #while length(rings) < num_rings
+    while count < 6
         println("iter ",count)
         count += 1
+
+        #expect each tnode has 1 pm with appropraite edge set
+        println("before send pms")
+        for node in collectNodes(graph)
+            println("-",node, " ", collectPartnerEdges(node))
+            for pm in node_to_tnode[node].send_buffer
+                printbeep(pm.beep, index_to_edge)
+            end
+        end
+        #send
         for node in graph_nodes
             temp_tnode::TNode = send(node_to_tnode[node], node_to_tnode, index_to_edge)
             delete!(node_to_tnode, node)
             node_to_tnode[node] = temp_tnode
         end
 
-        println("forw before rec", forwarded_rings)
+        #expect all partner edges of current node and edge of first node set(?)
+        println("before rec pms")
+        for node in collectNodes(graph)
+            println("|-",node, " ", collectPartnerEdges(node))
+            for pm in node_to_tnode[node].receive_buffer
+                print("sum: $(sum(pm.beep)) "); printbeep(pm.beep, index_to_edge)
+            end
+        end
+
+        #println("forw before rec", forwarded_rings)
+        #receive
         for node in graph_nodes
             (temp_tnode::TNode, forwarded_rings) = receive(node_to_tnode[node],forwarded_rings)
             delete!(node_to_tnode, node)
             node_to_tnode[node] = temp_tnode
         end
         println("forw after rec", forwarded_rings)
+        println("forw after rec", [sum(x) for x in forwarded_rings])
 
         even_sized::Vector{BitVector} = BitVector[]
         for bit_vec in forwarded_rings
-            println("sum before s1 ", sum(bit_vec), !(bit_vec in tested_beers))
+            #println("sum before s1 ", sum(bit_vec), !(bit_vec in tested_beers))
+            #println("sum ", sum(bit_vec))
+
             if sum(bit_vec) == 2*count -1
+                println("uneven count $(sum(bitvec))")
+                println(sum(bit_vec))
                 if !(bit_vec in tested_beers)
                     push!(tested_beers, bit_vec)
-                    println("rings before s1 ", length(rings))
+                    println("rings before s1 ", [sum(x) for x in rings])
                     println("matri before s1 ", length(matrix))
                     rings, matrix ,forwarded_rings ,tested_beers ,all_small_rings_ ,all_small_beers =
                             getBalducciParams(BalducciPearlmanRingSelector_(bit_vec,
@@ -392,10 +426,10 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
         #even sized
         dcount = 0
         for bit_vec in even_sized
-            println("sum before s2 ", sum(bit_vec), !(bit_vec in tested_beers))
+            #println("sum before s2 ", sum(bit_vec), !(bit_vec in tested_beers))
             if !(bit_vec in tested_beers)
                 push!(tested_beers, bit_vec)
-                println("rings before s2 ", length(rings))
+                println("rings before s2 ", [sum(x) for x in rings])
                 println("matri before s2 ", length(matrix))
                 rings, matrix ,forwarded_rings ,tested_beers ,all_small_rings ,all_small_beers =
                 getBalducciParams(BalducciPearlmanRingSelector_(bit_vec,
@@ -415,6 +449,8 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
         end
         println()
     end
+
+    #-----------
 
     for ring in rings
         in_ring::Set{Atom} = Set{Atom}()
@@ -466,4 +502,3 @@ BalducciPearlmanAlgorithm(graph::MolecularGraph) = begin
                                                         ,all_small_rings ,all_small_beers)
 
 end
-
