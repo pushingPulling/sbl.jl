@@ -36,7 +36,8 @@ mutable struct MolecularGraph <: AbstractMolGraph
     atoms_to_nodes_::Dict{Atom,AbstractNode}
     bonds_to_edges_::Dict{Bond,Edge}
     MolecularGraph() = new(Dict{Atom,AbstractNode}(), Dict{Bond,Edge}())
-    MolecularGraph(NodeType) = new(Dict{Atom,NodeType}(), Dict{Bond,Edge}())
+    MolecularGraph(NodeType::Type{typ}) where typ<:AbstractNode =
+                            new(Dict{Atom,NodeType}(), Dict{Bond,Edge}())
 
 end
 
@@ -105,7 +106,7 @@ newEdge(graph::MolecularGraph, bond::Bond) = begin
 end
 
 MolecularGraph(root::T, NodeType::Type{typ} = Node) where typ<:AbstractNode where T<:Union{System, Chain, Residue} = begin
-    graph = MolecularGraph()
+    graph = MolecularGraph(NodeType)
     atoms = collectAtoms(root)
     for at in atoms
         newNode(graph, at)

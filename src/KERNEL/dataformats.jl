@@ -545,7 +545,16 @@ parsePDB(path::String) = begin
         for line in eachline(file)
             #header
             if !seen_header && startswith(line,"HEADER")
-                root.name_ = strip(line[63:66])
+                if length(line) >= 66
+                    root.name_ = strip(line[63:66])
+                else
+                    temp = findlast("/",path)
+                    if isnothing(temp)
+                       root_name_ = path[1:end-4]
+                    else
+                        root.name_ = path[temp[1]+1:end-4]
+                    end
+                end
                 seen_header = true
             end
 

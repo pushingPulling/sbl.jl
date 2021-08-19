@@ -84,11 +84,21 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
     mcb::Vector{Vector{Edge}} = Vector{Edge}[]
     tested_cycles::Set{Vector{Edge}} = Set{Edge}()
 
-
+    #optimization: by constructing one big bfs with all the nodes, we can make the setdiff and find out
+    #which are not in the bfs. Start horton's algo with these nodes, as these will be in a cycle
+    bfs = breadthFirstSearchMCB(graph, first(values(graph.atoms_to_nodes_)),true)
+    bfs_bonds =  Set([x.bond_ for x in collectEdges(bfs)])
+    graph_bonds =  Set([x.bond_ for x in collectEdges(graph)])
+    nodes_with_missing_edges = [graph.atoms_to_nodes_[bond.source_] for bond in setdiff(graph_bonds, bfs_bonds)]
+    graph_nodes = filter(x->!in(x,nodes_with_missing_edges), collect(collectNodes(graph)))
+    graph_nodes = vcat(nodes_with_missing_edges, graph_nodes)
+    println(nodes_with_missing_edges, " ", graph_nodes)
     i = 1
-    for node in collectNodes(graph)
+    #for node in graph_nodes
+    for node in graph_nodes
         i += 1
-        bfs = breadthFirstSearchMCB(graph, node)
+        #only do a bfs of limited depth, as cycles can only have a limited number of atoms
+        bfs = breadthFirstSearchMCB(graph, node,false)
         bfs_bonds =  Set([x.bond_ for x in collectEdges(bfs)])
         graph_bonds =  Set([x.bond_ for x in collectEdges(graph)])
         edges_not_in_bfs = [graph.bonds_to_edges_[x] for x in setdiff(graph_bonds, bfs_bonds)]
@@ -124,6 +134,7 @@ minimum_cycle_basis(graph::MolecularGraph) = begin
             insert!(mcb, pos_in_mcb, new_cycle)
 
             if length(mcb) == num_edges - num_nodes +1
+                println("took $(i-1) tries")
                 return mcb
             end
         end
@@ -133,7 +144,8 @@ end
 
 SSSR(root::CompositeInterface) = begin
     if length(collectBonds(root)) - length(collectAtoms(root)) + 1 < 1
-        return
+        println("No cycles possible")
+        return Vector{Edge}[], Set{Atom}()
     end
 
     graph = MolecularGraph(root)
@@ -149,8 +161,8 @@ SSSR(root::CompositeInterface) = begin
     for edge in to_delete
         deleteEdge(graph, edge)
     end
-    sssr = minimum_cycle_basis(graph)
-    ring_atoms = Set{Atom}()
+    sssr::Vector{Vector{Edge}} = minimum_cycle_basis(graph)
+    ring_atoms::Set{Atom} = Set{Atom}()
     for edge in Iterators.flatten(sssr)
         push!(ring_atoms, edge.source_.atom_, edge.target_.atom_)
     end
