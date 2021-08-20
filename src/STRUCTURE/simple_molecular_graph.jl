@@ -5,7 +5,6 @@ simple_molecular_graph:
 - Date: 2021-08-04
 =#
 
-include("../KERNEL/kernel_functions.jl")
 abstract type AbstractNode end
 abstract type AbstractMolGraph end
 import Base.==

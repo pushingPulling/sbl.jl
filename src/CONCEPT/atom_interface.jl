@@ -4,5 +4,5 @@ AtomInterface:
 - Author: Dan
 - Date: 2021-07-27
 =#
-include("../CONCEPT/composite.jl")
+export AtomInterface
 abstract type AtomInterface <: CompositeInterface end

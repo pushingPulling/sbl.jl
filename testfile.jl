@@ -334,23 +334,27 @@ println(t," ", t2,"ms")
 #println( [x.serial_ for x in filter( (x) -> x.serial_ in [10,14,28,74,79] ,collectAtoms(internal_representation) )] )
 using StatProfilerHTML
 #struc = read("5ire.pdb", BioStructures.PDB)
+push!(LOAD_PATH, "G:\\Python Programme\\sbl.jl\\src\\" )
 
-
+using BALL
 
 
 
 #include("src/QSAR/ring_perception_processor.jl")
-include("src/QSAR/minimum_cycle_basis.jl")
+#include("src/QSAR/minimum_cycle_basis.jl")
 
 #internal = System("G:/Python Programme/sbl.jl/1,2-Benzodiazepine.pdb")
-internal = System("G:/Python Programme/sbl.jl/benzene.pdb")
-println("nodes: $(length(collectAtoms(internal)))")
-println("bonds: $(length(collectBonds(internal)))")
+internal = BALL.System("G:/Python Programme/sbl.jl/benzene.pdb")
+#println("nodes: $(length(collectAtoms(internal)))")
+#println("bonds: $(length(collectBonds(internal)))")
 
 println(internal)
 
 
-edges, atoms = SSSR(internal)
+edges, atoms = BALL.SSSR(internal)
 foreach(println, edges)
 println(atoms)
+
+import Pkg
+Pkg.generate("BALL")
 

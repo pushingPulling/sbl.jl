@@ -4,8 +4,11 @@ composir_iterator:
 - Author: Dan
 - Date: 2021-06-15
 =#
-include("../KERNEL/system.jl")
-include("../MOLMEC/MMFF94Parameters.jl")
+
+export
+    CompositeIterator, iterate_over_subtype, SystemIterator, ChainIterator, ResidueIterator,
+    AtomIterator
+
 abstract type CompositeIterator end
 using Base: SizeUnknown
 import Base.collect

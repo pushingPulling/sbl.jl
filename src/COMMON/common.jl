@@ -1,6 +1,8 @@
-include("global.jl")
 #import COMMON\common everywhere you want to import/"using" modules, as well as using globals
 import Base.showerror
+
+export
+    printfields, capitalize, TooManyIterationsException
 
 #this macro inherits the fields of another type
 #assume "Citizen" inherits the fields from "Person"

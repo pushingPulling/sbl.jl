@@ -4,11 +4,13 @@ chain:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("atomBijection.jl")       #seems dumb but in this build this includes all dependecies for this file
+export
+    Chain, getName
+
 
 mutable struct Chain <: CompositeInterface
     id_                                         ::Union{Char, Nothing}
-    number_of_children_                         ::Union{Size,Nothing}
+    number_of_children_                         ::Union{Int64,Nothing}
     parent_                                     ::Union{CompositeInterface, Nothing}
     previous_                                   ::Union{CompositeInterface, Nothing}
     next_                                       ::Union{CompositeInterface, Nothing}
@@ -16,8 +18,8 @@ mutable struct Chain <: CompositeInterface
     last_child_                                 ::Union{CompositeInterface, Nothing}
     properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
-    number_of_selected_children_                ::Union{Size,Nothing}
-    number_of_children_containing_selection_    ::Union{Size,Nothing}
+    number_of_selected_children_                ::Union{Int64,Nothing}
+    number_of_children_containing_selection_    ::Union{Int64,Nothing}
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{CompositeInterface, Nothing}
@@ -25,7 +27,7 @@ mutable struct Chain <: CompositeInterface
     Chain() = new(nothing,nothing,nothing,nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),
                     nothing,nothing,nothing,nothing,nothing,nothing,false)
     Chain(   id_                                         ::Union{Char, Nothing},
-             number_of_children_                         ::Union{Size,Nothing},
+             number_of_children_                         ::Union{Int64,Nothing},
              parent_                                     ::Union{CompositeInterface, Nothing},
              previous_                                   ::Union{CompositeInterface, Nothing},
              next_                                       ::Union{CompositeInterface, Nothing},
@@ -33,8 +35,8 @@ mutable struct Chain <: CompositeInterface
              last_child_                                 ::Union{CompositeInterface, Nothing},
              properties_                                 ::Vector{Tuple{String,UInt8}},
              contains_selection_                         ::Union{Bool,Nothing},
-             number_of_selected_children_                ::Union{Size,Nothing},
-             number_of_children_containing_selection_    ::Union{Size,Nothing},
+             number_of_selected_children_                ::Union{Int64,Nothing},
+             number_of_children_containing_selection_    ::Union{Int64,Nothing},
              selection_stamp_                            ::Union{TimeStamp,Nothing},
              modification_stamp_                         ::Union{TimeStamp,Nothing},
              trait_                                      ::Union{CompositeInterface, Nothing},
@@ -59,9 +61,6 @@ mutable struct Chain <: CompositeInterface
 
 
 end
-#creates a chain from a BioStructures.Chain but without expanding disordered chains
-Chain(res::BioStructures.Chain) = Chain(res.id, countresidues(res,expand_disordered = false),nothing,
-nothing,nothing,nothing,nothing,Vector{Tuple{String,UInt8}}(),false,0,0,nothing,nothing,nothing,false)
 
 getName(chain::Chain) = !isnothing(chain.id_) ? (chain.id_) : "-"
 

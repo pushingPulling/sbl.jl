@@ -5,14 +5,13 @@ composite:
 - Date: 2021-06-04
 =#
 
-include("timeStamp.jl")
-include("composite_interface.jl")
-import BioStructures
+export
+    Composite
 
 
 mutable struct Composite <: CompositeInterface
     name_                                       ::String
-    number_of_children_                         ::Size
+    number_of_children_                         ::Int64
     parent_                                     ::Union{CompositeInterface, Nothing}
     previous_                                   ::Union{Nothing, CompositeInterface}
     next_                                       ::Union{CompositeInterface, Nothing}
@@ -20,21 +19,21 @@ mutable struct Composite <: CompositeInterface
     last_child_                                 ::Union{CompositeInterface, Nothing}
     properties_                                 ::UInt64
     contains_selection_                         ::Bool
-    number_of_selected_children_                ::Size
-    number_of_children_containing_selection_    ::Size
+    number_of_selected_children_                ::Int64
+    number_of_children_containing_selection_    ::Int64
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{Nothing,CompositeInterface}
 
     #default constructor
-    Composite() = new()
+    Composite() = Composite("",0,nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing)
     Composite(xd::Bool) = new(0,nothing,nothing,nothing,nothing,nothing,nothing,0,false
     ,0,0,nothing,nothing,nothing)
 
     #full constructor
     Composite(
         name_                                   ::String,
-        number_of_children                      ::Size,
+        number_of_children                      ::Int64,
         parent                                  ::Composite,
         previous                                ::Composite,
         next                                    ::Composite,
@@ -42,8 +41,8 @@ mutable struct Composite <: CompositeInterface
         last_child                              ::Composite,
         properties                              ::UInt8,
         contains_selection                      ::Bool,
-        number_of_selected_children             ::Size,
-        number_of_children_containing_selection ::Size,
+        number_of_selected_children             ::Int64,
+        number_of_children_containing_selection ::Int64,
         selection_stamp                         ::TimeStamp,
         modification_stamp                      ::TimeStamp,
         trait                                   ::CompositeInterface
@@ -67,7 +66,7 @@ mutable struct Composite <: CompositeInterface
 end
 #partial constructor: Refs to other Composites and the obj itself
 Composite(
-    number_of_children              ::Size,
+    number_of_children              ::Int64,
     parent                          ::CompositeInterface,
     prev                            ::CompositeInterface,
     next                            ::CompositeInterface,
@@ -93,12 +92,3 @@ Composite(
         trait,
     )
 end
-
-
-
-
-#ToDo copy constr from system
-Composite(mod::BioStructures.Model) = Composite("", countchains(mod),
-    nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing)
-
-Composite() = Composite("",0,nothing,nothing,nothing,nothing,nothing,UInt64(0),false,0,0,nothing,nothing,nothing)

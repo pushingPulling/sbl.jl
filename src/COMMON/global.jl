@@ -5,6 +5,14 @@ global:
 - Date: 2021-06-02
 =#
 #not the same implementation as in C++BALL
+
+export
+	Byte, Position, Handle, Size, Distance, Index, ASCII, Amino_Acids,
+	BALL_QSAR_RINGPERCEEPTIONPROCESSOR_RUN_COUNT,
+	BALL_QSAR_RINGPERCEEPTIONPROCESSOR_MAX_RUNS,
+	BALL_HALF_OF_MAX_RING_SIZE, BALL_Properties
+
+
 const BALL_SIZE_TYPE = Int64
 const BALL_INDEX_TYPE = Int64
 
@@ -12,7 +20,7 @@ const BALL_INDEX_TYPE = Int64
 const Byte = UInt8
 const Position = BALL_SIZE_TYPE
 const Handle = BALL_SIZE_TYPE
-const Size = BALL_SIZE_TYPE
+#const Size = BALL_SIZE_TYPE
 const Distance = BALL_INDEX_TYPE
 const Index = BALL_INDEX_TYPE
 
@@ -40,10 +48,6 @@ const Index = BALL_INDEX_TYPE
 		#whenever one tries to convert an ascii to any type, it will actually convert to a character
 		Base.convert(::Type{Any}, x::ASCII) = convert(Char, x)
 
-@enum FileFormats begin
-	PDB
-end
-
 
 const INVALID_Distance = typemax(Distance)
 const Distance_MIN = typemin(Distance) + 1
@@ -61,9 +65,9 @@ const INVALID_Position = typemax(Position)
 const Position_MIN = 0
 const Position_MAX = typemax(BALL_INDEX_TYPE) - 1
 
-const INVALID_Size = typemax(Size)
-const Size_MIN = 0;
-const Size_MAX = typemax(Size) - 1;
+#const INVALID_Size = typemax(Size)
+#const Size_MIN = 0;
+#const Size_MAX = typemax(Size) - 1;
 
 const Amino_Acids = String["ALA", "CYS", "ASP", "GLU", "PHE", "GLY", "HIS", "ILE", "LYS", "LEU",
  							"MET", "ASN", "PRO", "GLN", "ARG", "SER", "THR", "VAL", "TRP", "TYR"]

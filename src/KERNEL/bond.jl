@@ -4,8 +4,13 @@ bond:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("atom_interface.jl")
+import ..CONCEPT: getProperties, hasProperty, getProperty
+export
+    Order, BondType, Bond, createBond, bondExists, printBonds, ORDER__SINGLE, TYPE__COVALENT,
+    TYPE__HYDROGEN, TYPE__DISULPHIDE_BRIDGE, TYPE__SALT_BRIDGE
+
 import Base.show
+import BALL.CONCEPT.setProperty
 
 @enum Order begin
         ORDER__UNKNOWN          = 0

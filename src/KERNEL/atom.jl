@@ -5,10 +5,8 @@ atom:
 - Date: 2021-06-01
 =#
 
-include("PTE.jl")
-include("bond.jl")
-using StaticArrays
-import BioStructures
+export
+    Atom, getBonds, collectBonds, setFormalCharge
 using Distances: euclidean, sqeuclidean
 
 mutable struct Atom <: AtomInterface    #AtomInterface inherits from CompositeInterface
@@ -112,8 +110,6 @@ Atom(   atomname::String, x::Float64, y::Float64, z::Float64,
             temp_factor)
     end
 
-Atom(res::BioStructures.DisorderedAtom) = nothing #change this if we need disorderedatoms
-
 getBonds(at::Atom) = at.bonds_
 
 collectBonds(atoms::Vector{Atom}) = begin
@@ -124,11 +120,6 @@ collectBonds(atoms::Vector{Atom}) = begin
     return bonds
 end
 
-Atom(res::BioStructures.Atom) = begin
-    return Atom(String(strip(res.name)), res.coords[1],res.coords[2],res.coords[3],String(strip(res.element)),
-    (strip(res.charge) == "") ? nothing : parse(Float64,res.charge),
-    res.occupancy, res.serial, res.temp_factor)
-end
 
 setFormalCharge(at::Atom, new_charge::Index) = begin at.formal_charge_ = new_charge end
 

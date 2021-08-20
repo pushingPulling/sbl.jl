@@ -5,8 +5,6 @@ common:
 - Date: 2021-06-09
 =#
 module CONCEPT
-    include("composite.jl")
-    include("timeStamp.jl")
 
 
 export CompositeType, Composite, CompositeInterface, TimeStamp, PreciseTime

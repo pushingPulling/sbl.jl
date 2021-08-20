@@ -5,7 +5,6 @@ add_hydrogen_processor:
 - Date: 2021-07-03
 =#
 
-include("../QSAR/minimum_cycle_basis")
 
 addHydrogen(composite::CompositeInterface) = begin
     for residue in collectResidues(composite)

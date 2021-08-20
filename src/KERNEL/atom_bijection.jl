@@ -5,7 +5,10 @@ atomBijection:
 - Date: 2021-06-28
 =#
 using Bijections
-include("atom.jl")
+
+export
+    calculateRMSD, assignByName, assignCAlphaAtoms, assignBackboneAtoms
+
 const AtomBijection = Bijection{Atom,Atom}
 
 function calculateRMSD(bijec::AtomBijection)

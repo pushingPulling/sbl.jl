@@ -5,8 +5,11 @@ composite_interface:
 - Date: 2021-06-07
 =#
 
-include("../COMMON/common.jl")
-include("selectable.jl")
+export
+    CompositeInterface, isDescendantOf, countDescendants, removeChild, getParent,
+    getChildren, appendChild, isSibling, appendSibling, prependSibling, hasProperty,
+    recursive_collect, clearSelectionTree, countChildren, getProperties,
+    getProperty, setProperty, getName
 
 import Base.convert
 
@@ -67,7 +70,7 @@ end
 
 
 countDescendants(node::Type) where {Type <: CompositeInterface} = begin
-    number_of_descendants::Size = 1
+    number_of_descendants::Int64 = 1
     if isnothing(node.first_child_)
         return 1
     end
@@ -242,32 +245,13 @@ prependSibling(comp::T, other::T) where T<:CompositeInterface = begin
 end
 
 countDescendants_iterate(node::Type) where {Type <: CompositeInterface} = begin
-    number_of_descendants::Size = 0
+    number_of_descendants::Int64 = 0
     for descendants in node
         number_of_descendants += 1
     end
     return number_of_descendants
 end
 
-
-countAtoms(node::CompositeInterface) = begin
-    number_of_atoms::Size = 0
-    if isnothing(node.first_child_)
-        if isa(node,Atom)
-            return 1
-        else
-            return 0
-        end
-    end
-
-    cur = node.first_child_
-    number_of_atoms += countAtoms(cur)
-    while !isnothing(cur.next_)
-        number_of_atoms += countAtoms(cur.next_)
-        cur = cur.next_
-    end
-    return number_of_atoms
-end
 
 #order: NLR
 recursive_collect(node::Type1, collectType::Type{Type2}) where {Type1, Type2 <: CompositeInterface} = begin
@@ -297,40 +281,6 @@ end
 Base.collect(node::T) where T <: CompositeInterface = begin
     return recursive_collect(node,CompositeInterface)
 end
-
-collectAtoms(node::CompositeInterface) = begin
-    recursive_collect(node,Atom)
-end
-
-collectAtoms(node::CompositeInterface, selector::Function) = begin
-    filter!(selector, collectAtoms(node))
-end
-
-collectResidues(node::CompositeInterface, selector::Function) = begin
-    filter!(selector, collectResidues(node))
-end
-collectChains(node::CompositeInterface, selector::Function) = begin
-    filter!(selector, collectChains(node))
-end
-
-
-collectResidues(node::CompositeInterface) = begin
-    recursive_collect(node,Residue)
-end
-
-collectChains(node::CompositeInterface) = begin
-    recursive_collect(node,Chain)
-end
-
-collectBonds(node::CompositeInterface) = begin
-    bonds = Set{Bond}()
-    for at in collectAtoms(node)
-        length(values(getBonds(at))) > 0 && push!(bonds, values(getBonds(at))...)
-    end
-    return collect(bonds)
-end
-
-
 
 function clearSelectionTree(x::CompositeInterface)
     for node in x
@@ -387,10 +337,6 @@ end
 
 getName(::Nothing) = "N/A"
 
-
-
-Base.show(io::IO, comp::CompositeInterface) = print(io, typeof(comp)," \"",getName(comp), "\" with ",
-countChildren(comp), " child",countChildren(comp) == 1 ? "" : "ren", " containing ", countAtoms(comp)," Atoms")
 
 
 

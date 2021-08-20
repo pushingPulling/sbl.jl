@@ -4,13 +4,12 @@ fragment:
 - Author: Dan
 - Date: 2021-06-01
 =#
-include("chain.jl")
 
-import BioStructures
+export Residue, getName, isAminoAcid, isNTerminal
 
 mutable struct Residue <: CompositeInterface
     name_                                       ::Union{String,Nothing}
-    number_of_children_                         ::Union{Size,Nothing}
+    number_of_children_                         ::Union{Int64,Nothing}
     parent_                                     ::Union{Nothing,CompositeInterface}
     previous_                                   ::Union{Nothing,CompositeInterface}
     next_                                       ::Union{Nothing,CompositeInterface}
@@ -18,8 +17,8 @@ mutable struct Residue <: CompositeInterface
     last_child_                                 ::Union{Nothing,CompositeInterface}
     properties_                                 ::Vector{Tuple{String,UInt8}}
     contains_selection_                         ::Union{Bool,Nothing}
-    number_of_selected_children_                ::Union{Size,Nothing}
-    number_of_children_containing_selection_    ::Union{Size,Nothing}
+    number_of_selected_children_                ::Union{Int64,Nothing}
+    number_of_children_containing_selection_    ::Union{Int64,Nothing}
     selection_stamp_                            ::Union{TimeStamp,Nothing}
     modification_stamp_                         ::Union{TimeStamp,Nothing}
     trait_                                      ::Union{Nothing,CompositeInterface}
@@ -33,7 +32,7 @@ mutable struct Residue <: CompositeInterface
     nothing,nothing,nothing,nothing,false)
 
     Residue(name_                                   ::Union{String,Nothing},
-            number_of_children_                         ::Union{Size,Nothing},
+            number_of_children_                         ::Union{Int64,Nothing},
             parent_                                     ::Union{Nothing,CompositeInterface},
             previous_                                   ::Union{Nothing,CompositeInterface},
             next_                                       ::Union{Nothing,CompositeInterface},
@@ -41,8 +40,8 @@ mutable struct Residue <: CompositeInterface
             last_child_                                 ::Union{Nothing,CompositeInterface},
             properties_                                 ::Vector{Tuple{String,UInt8}},
             contains_selection_                         ::Union{Bool,Nothing},
-            number_of_selected_children_                ::Union{Size,Nothing},
-            number_of_children_containing_selection_    ::Union{Size,Nothing},
+            number_of_selected_children_                ::Union{Int64,Nothing},
+            number_of_children_containing_selection_    ::Union{Int64,Nothing},
             selection_stamp_                            ::Union{TimeStamp,Nothing},
             modification_stamp_                         ::Union{TimeStamp,Nothing},
             trait_                                      ::Union{Nothing,CompositeInterface},
@@ -81,9 +80,6 @@ Residue(res_name::String,num_of_children::Int64, ins_code::Char, res_number::Int
 
 
 
-
-Residue(res::BioStructures.Residue) = Residue(res.name,countatoms(res,expand_disordered = false), res.ins_code,res.number,res.het_res)
-Residue(res::BioStructures.DisorderedResidue) = nothing #change this if we need disorderedRes
 
 getName(res::Residue) = !isnothing(res.name_) ? (res.name_) : "N/A"
 
